@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alertabarrio.ingsoft.models.dtos.UserResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.UserSaveDTO;
-import com.alertabarrio.ingsoft.services.implementation.UserService;
+import com.alertabarrio.ingsoft.services.UserService;
 
 import jakarta.validation.Valid;
 
