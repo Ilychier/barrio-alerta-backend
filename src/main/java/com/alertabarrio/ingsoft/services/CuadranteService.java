@@ -1,4 +1,4 @@
-package com.alertabarrio.ingsoft.services.implementation;
+package com.alertabarrio.ingsoft.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

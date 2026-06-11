@@ -1,4 +1,4 @@
-package com.alertabarrio.ingsoft.services.implementation;
+package com.alertabarrio.ingsoft.services.implementation; // <-- Paquete mantenido para la implementación
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +10,7 @@ import com.alertabarrio.ingsoft.models.dtos.CuadranteResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.CuadranteSaveDTO;
 import com.alertabarrio.ingsoft.models.entities.Cuadrante;
 import com.alertabarrio.ingsoft.repositories.CuadranteRepository;
+import com.alertabarrio.ingsoft.services.CuadranteService; // <-- Import de la interfaz corregido
 
 @Service
 public class CuadranteServiceImpl implements CuadranteService {
@@ -22,8 +23,9 @@ public class CuadranteServiceImpl implements CuadranteService {
 
     @Override
     public CuadranteResponseDTO save(CuadranteSaveDTO dto) {
-        if (cuadranteRepository.existsByNombreUnidad(dto.nombreUnidad())) {
-            throw new ResourceConflictException("A cuadrante with the nombre unidad '" + dto.nombreUnidad() + "' already exists.");
+        // Validación actualizada al teléfono
+        if (cuadranteRepository.existsByTelefonoEmergencia(dto.telefonoEmergencia())) {
+            throw new ResourceConflictException("A cuadrante with the phone '" + dto.telefonoEmergencia() + "' already exists.");
         }
 
         Cuadrante cuadrante = new Cuadrante();
@@ -45,8 +47,9 @@ public class CuadranteServiceImpl implements CuadranteService {
         Cuadrante cuadrante = cuadranteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cuadrante", id));
 
-        if (!cuadrante.getNombreUnidad().equals(dto.nombreUnidad()) && cuadranteRepository.existsByNombreUnidad(dto.nombreUnidad())) {
-            throw new ResourceConflictException("A cuadrante with the nombre unidad '" + dto.nombreUnidad() + "' already exists.");
+        // Validación actualizada al teléfono
+        if (!cuadrante.getTelefonoEmergencia().equals(dto.telefonoEmergencia()) && cuadranteRepository.existsByTelefonoEmergencia(dto.telefonoEmergencia())) {
+            throw new ResourceConflictException("A cuadrante with the phone '" + dto.telefonoEmergencia() + "' already exists.");
         }
 
         cuadrante.setNombreUnidad(dto.nombreUnidad());
@@ -61,12 +64,16 @@ public class CuadranteServiceImpl implements CuadranteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cuadrante", id));
 
         if (dto.nombreUnidad() != null) {
-            if (!cuadrante.getNombreUnidad().equals(dto.nombreUnidad()) && cuadranteRepository.existsByNombreUnidad(dto.nombreUnidad())) {
-                throw new ResourceConflictException("A cuadrante with the nombre unidad '" + dto.nombreUnidad() + "' already exists.");
-            }
             cuadrante.setNombreUnidad(dto.nombreUnidad());
         }
-        if (dto.telefonoEmergencia() != null) cuadrante.setTelefonoEmergencia(dto.telefonoEmergencia());
+        
+        // Validación actualizada al teléfono
+        if (dto.telefonoEmergencia() != null) {
+            if (!cuadrante.getTelefonoEmergencia().equals(dto.telefonoEmergencia()) && cuadranteRepository.existsByTelefonoEmergencia(dto.telefonoEmergencia())) {
+                throw new ResourceConflictException("A cuadrante with the phone '" + dto.telefonoEmergencia() + "' already exists.");
+            }
+            cuadrante.setTelefonoEmergencia(dto.telefonoEmergencia());
+        }
 
         return mapToDTO(cuadranteRepository.save(cuadrante));
     }
