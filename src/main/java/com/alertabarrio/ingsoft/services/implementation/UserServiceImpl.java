@@ -10,6 +10,7 @@ import com.alertabarrio.ingsoft.models.dtos.UserResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.UserSaveDTO;
 import com.alertabarrio.ingsoft.models.entities.User;
 import com.alertabarrio.ingsoft.repositories.UserRepository;
+import com.alertabarrio.ingsoft.services.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
