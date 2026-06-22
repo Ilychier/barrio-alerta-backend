@@ -1,32 +1,54 @@
 package com.alertabarrio.ingsoft.controllers;
 
-import com.alertabarrio.ingsoft.models.entities.Evidencia;
-import com.alertabarrio.ingsoft.repositories.EvidenciaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.alertabarrio.ingsoft.models.dtos.EvidenciaResponseDTO;
+import com.alertabarrio.ingsoft.models.dtos.EvidenciaSaveDTO;
+import com.alertabarrio.ingsoft.services.EvidenciaService;
 
 @RestController
 @RequestMapping("/api/evidencias")
 public class EvidenciaController {
 
-    @Autowired
-    private EvidenciaRepository evidenciaRepository;
+    private final EvidenciaService evidenciaService;
 
-    // Subir un registro de Evidencia (POST) - http://localhost:8080/api/evidencias
-    @PostMapping
-    public ResponseEntity<Evidencia> crearEvidencia(@RequestBody Evidencia evidencia) {
-        Evidencia nuevaEvidencia = evidenciaRepository.save(evidencia);
-        return new ResponseEntity<>(nuevaEvidencia, HttpStatus.CREATED);
+    public EvidenciaController(EvidenciaService evidenciaService) {
+        this.evidenciaService = evidenciaService;
     }
 
-    // Listar las Evidencias (GET) - http://localhost:8080/api/evidencias
+    @PostMapping
+    public ResponseEntity<EvidenciaResponseDTO> save(@Valid @RequestBody EvidenciaSaveDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(evidenciaService.save(dto));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EvidenciaResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(evidenciaService.findById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EvidenciaResponseDTO> update(@PathVariable Long id, @Valid @RequestBody EvidenciaSaveDTO dto) {
+        return ResponseEntity.ok(evidenciaService.update(id, dto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<EvidenciaResponseDTO> patch(@PathVariable Long id, @RequestBody EvidenciaSaveDTO dto) {
+        return ResponseEntity.ok(evidenciaService.patch(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        evidenciaService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
-    public ResponseEntity<List<Evidencia>> listarEvidencias() {
-        List<Evidencia> evidencias = evidenciaRepository.findAll();
-        return new ResponseEntity<>(evidencias, HttpStatus.OK);
+    public ResponseEntity<Page<EvidenciaResponseDTO>> findAllPaginated(Pageable pageable) {
+        return ResponseEntity.ok(evidenciaService.findAllPaginated(pageable));
     }
 }

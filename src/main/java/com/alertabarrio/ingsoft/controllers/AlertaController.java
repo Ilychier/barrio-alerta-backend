@@ -1,32 +1,54 @@
 package com.alertabarrio.ingsoft.controllers;
 
-import com.alertabarrio.ingsoft.models.entities.Alerta;
-import com.alertabarrio.ingsoft.repositories.AlertaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.alertabarrio.ingsoft.models.dtos.AlertaResponseDTO;
+import com.alertabarrio.ingsoft.models.dtos.AlertaSaveDTO;
+import com.alertabarrio.ingsoft.services.AlertaService;
 
 @RestController
 @RequestMapping("/api/alertas")
 public class AlertaController {
 
-    @Autowired
-    private AlertaRepository alertaRepository;
+    private final AlertaService alertaService;
 
-    // Crear una Alerta (POST) - http://localhost:8080/api/alertas
-    @PostMapping
-    public ResponseEntity<Alerta> crearAlerta(@RequestBody Alerta alerta) {
-        Alerta nuevaAlerta = alertaRepository.save(alerta);
-        return new ResponseEntity<>(nuevaAlerta, HttpStatus.CREATED);
+    public AlertaController(AlertaService alertaService) {
+        this.alertaService = alertaService;
     }
 
-    // Listar todas las Alertas (GET) - http://localhost:8080/api/alertas
+    @PostMapping
+    public ResponseEntity<AlertaResponseDTO> save(@Valid @RequestBody AlertaSaveDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(alertaService.save(dto));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AlertaResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(alertaService.findById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AlertaResponseDTO> update(@PathVariable Long id, @Valid @RequestBody AlertaSaveDTO dto) {
+        return ResponseEntity.ok(alertaService.update(id, dto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<AlertaResponseDTO> patch(@PathVariable Long id, @RequestBody AlertaSaveDTO dto) {
+        return ResponseEntity.ok(alertaService.patch(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        alertaService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
-    public ResponseEntity<List<Alerta>> listarAlertas() {
-        List<Alerta> alertas = alertaRepository.findAll();
-        return new ResponseEntity<>(alertas, HttpStatus.OK);
+    public ResponseEntity<Page<AlertaResponseDTO>> findAllPaginated(Pageable pageable) {
+        return ResponseEntity.ok(alertaService.findAllPaginated(pageable));
     }
 }
