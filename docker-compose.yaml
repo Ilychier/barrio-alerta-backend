@@ -2,6 +2,8 @@ services:
   db:
     image: postgres:16-alpine
     container_name: alerta-barrio-db
+    networks:
+      - alerta-net
     environment:
       - POSTGRES_DB=alerta_barrio
       - POSTGRES_USER=postgres
@@ -21,16 +23,19 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: alerta-barrio-app
+    networks:
+      - alerta-net
     ports:
-      - "8080:8080"
+      - "8088:8080"
     environment:
       - SPRING_DOCKER_COMPOSE_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/alerta_barrio
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=1234
-    depends_on:
-      db:
-        condition: service_healthy
+
+networks:
+  alerta-net:
+    driver: bridge
 
 volumes:
   postgres_data:
