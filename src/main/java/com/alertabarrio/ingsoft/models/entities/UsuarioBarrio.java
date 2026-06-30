@@ -1,6 +1,5 @@
 package com.alertabarrio.ingsoft.models.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,34 +11,24 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDateTime;
 
-@Table(name = "alertas")
+@Table(name = "usuarios_barrios")
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Alerta {
-
+public class UsuarioBarrio {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "descripcion", nullable = false)
-    private String descripcion;
-
-    @Column(name = "es_sos", nullable = false)
-    private Boolean esSos;
-
-    @Column(name = "fecha_hora", nullable = false)
-    private LocalDateTime fechaHora;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private User usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id", nullable = false)
-    private Categoria categoria;
+    @JoinColumn(name = "barrio_id", nullable = false)
+    private Barrio barrio;
 
 }

@@ -1,12 +1,13 @@
 package com.alertabarrio.ingsoft.models.dtos;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public record AlertaResponseDTO(
     Long id,
-    String tipo,
     String descripcion,
-    String ubicacion,
-    java.time.LocalDateTime fechaHora,
-    Long usuarioId
+    Boolean esSos,
+    LocalDateTime fechaHora,
+    Long usuarioId,
+    CategoriaResponseDTO categoria
 ) implements Serializable {}
