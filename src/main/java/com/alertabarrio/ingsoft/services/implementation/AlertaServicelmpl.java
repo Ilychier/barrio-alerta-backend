@@ -8,35 +8,54 @@ import java.time.LocalDateTime;
 import com.alertabarrio.ingsoft.exceptions.ResourceNotFoundException;
 import com.alertabarrio.ingsoft.models.dtos.AlertaResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.AlertaSaveDTO;
+import com.alertabarrio.ingsoft.models.dtos.CategoriaResponseDTO;
 import com.alertabarrio.ingsoft.models.entities.Alerta;
+import com.alertabarrio.ingsoft.models.entities.Categoria;
+import com.alertabarrio.ingsoft.models.entities.User;
 import com.alertabarrio.ingsoft.repositories.AlertaRepository;
+import com.alertabarrio.ingsoft.repositories.CategoriaRepository;
+import com.alertabarrio.ingsoft.repositories.UserRepository;
 import com.alertabarrio.ingsoft.services.AlertaService;
 
 @Service
 public class AlertaServicelmpl implements AlertaService {
 
     private final AlertaRepository alertaRepository;
+    private final UserRepository userRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public AlertaServicelmpl(AlertaRepository alertaRepository) {
+    public AlertaServicelmpl(
+            AlertaRepository alertaRepository,
+            UserRepository userRepository,
+            CategoriaRepository categoriaRepository) {
         this.alertaRepository = alertaRepository;
+        this.userRepository = userRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     @Override
     public AlertaResponseDTO save(AlertaSaveDTO dto) {
-        Alerta alerta = new Alerta();
-        alerta.setTipo(dto.tipo());
-        alerta.setDescripcion(dto.descripcion());
-        alerta.setUbicacion(dto.ubicacion());
-        alerta.setFechaHora(LocalDateTime.now());
+        User user = userRepository.findById(dto.usuarioId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", dto.usuarioId()));
 
-        return mapToDTO(alertaRepository.save(alerta), dto.usuarioId());
+        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria", dto.categoriaId()));
+
+        Alerta alerta = new Alerta();
+        alerta.setDescripcion(dto.descripcion());
+        alerta.setEsSos(dto.esSos());
+        alerta.setFechaHora(LocalDateTime.now());
+        alerta.setUsuario(user);
+        alerta.setCategoria(categoria);
+
+        return mapToDTO(alertaRepository.save(alerta));
     }
 
     @Override
     public AlertaResponseDTO findById(Long id) {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alerta", id));
-        return mapToDTO(alerta, null);
+        return mapToDTO(alerta);
     }
 
     @Override
@@ -44,11 +63,18 @@ public class AlertaServicelmpl implements AlertaService {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alerta", id));
 
-        alerta.setTipo(dto.tipo());
-        alerta.setDescripcion(dto.descripcion());
-        alerta.setUbicacion(dto.ubicacion());
+        User user = userRepository.findById(dto.usuarioId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", dto.usuarioId()));
 
-        return mapToDTO(alertaRepository.save(alerta), dto.usuarioId());
+        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria", dto.categoriaId()));
+
+        alerta.setDescripcion(dto.descripcion());
+        alerta.setEsSos(dto.esSos());
+        alerta.setUsuario(user);
+        alerta.setCategoria(categoria);
+
+        return mapToDTO(alertaRepository.save(alerta));
     }
 
     @Override
@@ -56,11 +82,22 @@ public class AlertaServicelmpl implements AlertaService {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alerta", id));
 
-        if (dto.tipo() != null) alerta.setTipo(dto.tipo());
         if (dto.descripcion() != null) alerta.setDescripcion(dto.descripcion());
-        if (dto.ubicacion() != null) alerta.setUbicacion(dto.ubicacion());
+        if (dto.esSos() != null) alerta.setEsSos(dto.esSos());
 
-        return mapToDTO(alertaRepository.save(alerta), dto.usuarioId());
+        if (dto.usuarioId() != null) {
+            User user = userRepository.findById(dto.usuarioId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", dto.usuarioId()));
+            alerta.setUsuario(user);
+        }
+
+        if (dto.categoriaId() != null) {
+            Categoria categoria = categoriaRepository.findById(dto.categoriaId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria", dto.categoriaId()));
+            alerta.setCategoria(categoria);
+        }
+
+        return mapToDTO(alertaRepository.save(alerta));
     }
 
     @Override
@@ -73,17 +110,26 @@ public class AlertaServicelmpl implements AlertaService {
 
     @Override
     public Page<AlertaResponseDTO> findAllPaginated(Pageable pageable) {
-        return alertaRepository.findAll(pageable).map(entity -> mapToDTO(entity, null));
+        return alertaRepository.findAll(pageable).map(this::mapToDTO);
     }
 
-    private AlertaResponseDTO mapToDTO(Alerta entity, Long usuarioId) {
+    private AlertaResponseDTO mapToDTO(Alerta entity) {
+        CategoriaResponseDTO categoriaDTO = null;
+        if (entity.getCategoria() != null) {
+            categoriaDTO = new CategoriaResponseDTO(
+                entity.getCategoria().getId(),
+                entity.getCategoria().getNombre(),
+                entity.getCategoria().getIconoReferencia()
+            );
+        }
+
         return new AlertaResponseDTO(
             entity.getId(),
-            entity.getTipo(),
             entity.getDescripcion(),
-            entity.getUbicacion(),
+            entity.getEsSos(),
             entity.getFechaHora(),
-            usuarioId
+            entity.getUsuario() != null ? entity.getUsuario().getId() : null,
+            categoriaDTO
         );
     }
 }
