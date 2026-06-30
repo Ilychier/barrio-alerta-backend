@@ -13,6 +13,7 @@ import com.alertabarrio.ingsoft.services.AlertaService;
 
 @RestController
 @RequestMapping("/api/alertas")
+@CrossOrigin(origins = "*")
 public class AlertaController {
 
     private final AlertaService alertaService;
