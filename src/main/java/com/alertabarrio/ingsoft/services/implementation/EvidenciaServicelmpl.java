@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 import com.alertabarrio.ingsoft.exceptions.ResourceNotFoundException;
 import com.alertabarrio.ingsoft.models.dtos.EvidenciaResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.EvidenciaSaveDTO;
+import com.alertabarrio.ingsoft.models.entities.Alerta;
 import com.alertabarrio.ingsoft.models.entities.Evidencia;
+import com.alertabarrio.ingsoft.repositories.AlertaRepository;
 import com.alertabarrio.ingsoft.repositories.EvidenciaRepository;
 import com.alertabarrio.ingsoft.services.EvidenciaService;
 
@@ -16,25 +18,31 @@ import com.alertabarrio.ingsoft.services.EvidenciaService;
 public class EvidenciaServicelmpl implements EvidenciaService {
 
     private final EvidenciaRepository evidenciaRepository;
+    private final AlertaRepository alertaRepository;
 
-    public EvidenciaServicelmpl(EvidenciaRepository evidenciaRepository) {
+    public EvidenciaServicelmpl(EvidenciaRepository evidenciaRepository, AlertaRepository alertaRepository) {
         this.evidenciaRepository = evidenciaRepository;
+        this.alertaRepository = alertaRepository;
     }
 
     @Override
     public EvidenciaResponseDTO save(EvidenciaSaveDTO dto) {
+        Alerta alerta = alertaRepository.findById(dto.alertaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Alerta", dto.alertaId()));
+
         Evidencia evidencia = new Evidencia();
         evidencia.setArchivoUrl(dto.archivoUrl());
         evidencia.setFechaSubida(LocalDateTime.now());
+        evidencia.setAlerta(alerta);
 
-        return mapToDTO(evidenciaRepository.save(evidencia), dto.alertaId());
+        return mapToDTO(evidenciaRepository.save(evidencia));
     }
 
     @Override
     public EvidenciaResponseDTO findById(Long id) {
         Evidencia evidencia = evidenciaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Evidencia", id));
-        return mapToDTO(evidencia, null);
+        return mapToDTO(evidencia);
     }
 
     @Override
@@ -42,9 +50,13 @@ public class EvidenciaServicelmpl implements EvidenciaService {
         Evidencia evidencia = evidenciaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Evidencia", id));
 
-        evidencia.setArchivoUrl(dto.archivoUrl());
+        Alerta alerta = alertaRepository.findById(dto.alertaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Alerta", dto.alertaId()));
 
-        return mapToDTO(evidenciaRepository.save(evidencia), dto.alertaId());
+        evidencia.setArchivoUrl(dto.archivoUrl());
+        evidencia.setAlerta(alerta);
+
+        return mapToDTO(evidenciaRepository.save(evidencia));
     }
 
     @Override
@@ -54,7 +66,13 @@ public class EvidenciaServicelmpl implements EvidenciaService {
 
         if (dto.archivoUrl() != null) evidencia.setArchivoUrl(dto.archivoUrl());
 
-        return mapToDTO(evidenciaRepository.save(evidencia), dto.alertaId());
+        if (dto.alertaId() != null) {
+            Alerta alerta = alertaRepository.findById(dto.alertaId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Alerta", dto.alertaId()));
+            evidencia.setAlerta(alerta);
+        }
+
+        return mapToDTO(evidenciaRepository.save(evidencia));
     }
 
     @Override
@@ -66,16 +84,19 @@ public class EvidenciaServicelmpl implements EvidenciaService {
     }
 
     @Override
-    public Page<EvidenciaResponseDTO> findAllPaginated(Pageable pageable) {
-        return evidenciaRepository.findAll(pageable).map(entity -> mapToDTO(entity, null));
+    public Page<EvidenciaResponseDTO> findAllPaginated(Long alertaId, Pageable pageable) {
+        if (alertaId != null) {
+            return evidenciaRepository.findByAlertaId(alertaId, pageable).map(this::mapToDTO);
+        }
+        return evidenciaRepository.findAll(pageable).map(this::mapToDTO);
     }
 
-    private EvidenciaResponseDTO mapToDTO(Evidencia entity, Long alertaId) {
+    private EvidenciaResponseDTO mapToDTO(Evidencia entity) {
         return new EvidenciaResponseDTO(
             entity.getId(),
             entity.getArchivoUrl(),
             entity.getFechaSubida(),
-            alertaId
+            entity.getAlerta() != null ? entity.getAlerta().getId() : null
         );
     }
 }
