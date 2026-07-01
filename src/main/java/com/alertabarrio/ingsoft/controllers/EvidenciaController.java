@@ -59,7 +59,9 @@ public class EvidenciaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<EvidenciaResponseDTO>> findAllPaginated(Pageable pageable) {
-        return ResponseEntity.ok(evidenciaService.findAllPaginated(pageable));
+    public ResponseEntity<Page<EvidenciaResponseDTO>> findAllPaginated(
+            @RequestParam(required = false) Long alertaId,
+            Pageable pageable) {
+        return ResponseEntity.ok(evidenciaService.findAllPaginated(alertaId, pageable));
     }
 }
