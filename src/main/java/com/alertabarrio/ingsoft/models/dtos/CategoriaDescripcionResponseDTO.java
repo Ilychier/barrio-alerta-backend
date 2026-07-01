@@ -5,5 +5,6 @@ import java.io.Serializable;
 public record CategoriaDescripcionResponseDTO(
     Long id,
     String descripcion,
-    Long categoriaId
+    Long categoriaId,
+    String imagenUrl
 ) implements Serializable {}
