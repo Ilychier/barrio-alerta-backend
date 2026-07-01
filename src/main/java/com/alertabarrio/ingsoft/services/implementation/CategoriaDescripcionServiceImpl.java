@@ -34,6 +34,7 @@ public class CategoriaDescripcionServiceImpl implements CategoriaDescripcionServ
         CategoriaDescripcion cd = new CategoriaDescripcion();
         cd.setDescripcion(dto.descripcion());
         cd.setCategoria(categoria);
+        cd.setImagenUrl(dto.imagenUrl());
 
         return mapToDTO(categoriaDescripcionRepository.save(cd));
     }
@@ -55,6 +56,7 @@ public class CategoriaDescripcionServiceImpl implements CategoriaDescripcionServ
 
         cd.setDescripcion(dto.descripcion());
         cd.setCategoria(categoria);
+        cd.setImagenUrl(dto.imagenUrl());
 
         return mapToDTO(categoriaDescripcionRepository.save(cd));
     }
@@ -66,6 +68,10 @@ public class CategoriaDescripcionServiceImpl implements CategoriaDescripcionServ
 
         if (dto.descripcion() != null) {
             cd.setDescripcion(dto.descripcion());
+        }
+
+        if (dto.imagenUrl() != null) {
+            cd.setImagenUrl(dto.imagenUrl());
         }
 
         if (dto.categoriaId() != null) {
@@ -97,7 +103,8 @@ public class CategoriaDescripcionServiceImpl implements CategoriaDescripcionServ
         return new CategoriaDescripcionResponseDTO(
             entity.getId(),
             entity.getDescripcion(),
-            entity.getCategoria() != null ? entity.getCategoria().getId() : null
+            entity.getCategoria() != null ? entity.getCategoria().getId() : null,
+            entity.getImagenUrl()
         );
     }
 }

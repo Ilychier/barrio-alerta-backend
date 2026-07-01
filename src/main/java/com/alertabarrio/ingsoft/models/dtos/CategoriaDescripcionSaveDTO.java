@@ -9,5 +9,7 @@ public record CategoriaDescripcionSaveDTO(
     String descripcion,
 
     @NotNull(message = "El ID de la categoria asociada es requerido")
-    Long categoriaId
+    Long categoriaId,
+
+    String imagenUrl
 ) implements Serializable {}

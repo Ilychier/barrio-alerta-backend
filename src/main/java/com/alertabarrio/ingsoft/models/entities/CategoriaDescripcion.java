@@ -31,4 +31,7 @@ public class CategoriaDescripcion {
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
+    @Column(name = "imagen_url", length = 255)
+    private String imagenUrl;
+
 }
