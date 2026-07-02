@@ -7,5 +7,6 @@ public record UserResponseDTO(
     String name,
     String email,
     String phone,
-    String address
+    String address,
+    Long barrioId
 ) implements Serializable {}
