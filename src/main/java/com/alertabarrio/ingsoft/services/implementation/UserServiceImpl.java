@@ -9,16 +9,20 @@ import com.alertabarrio.ingsoft.exceptions.ResourceNotFoundException;
 import com.alertabarrio.ingsoft.models.dtos.UserResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.UserSaveDTO;
 import com.alertabarrio.ingsoft.models.entities.User;
+import com.alertabarrio.ingsoft.models.entities.Barrio;
 import com.alertabarrio.ingsoft.repositories.UserRepository;
+import com.alertabarrio.ingsoft.repositories.BarrioRepository;
 import com.alertabarrio.ingsoft.services.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BarrioRepository barrioRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, BarrioRepository barrioRepository) {
         this.userRepository = userRepository;
+        this.barrioRepository = barrioRepository;
     }
 
     @Override
@@ -32,6 +36,11 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.email());
         user.setPhone(dto.phone());
         user.setAddress(dto.address());
+        if (dto.barrioId() != null) {
+            Barrio barrio = barrioRepository.findById(dto.barrioId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Barrio", dto.barrioId()));
+            user.setBarrio(barrio);
+        }
 
         return mapToDTO(userRepository.save(user));
     }
@@ -56,6 +65,13 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.email());
         user.setPhone(dto.phone());
         user.setAddress(dto.address());
+        if (dto.barrioId() != null) {
+            Barrio barrio = barrioRepository.findById(dto.barrioId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Barrio", dto.barrioId()));
+            user.setBarrio(barrio);
+        } else {
+            user.setBarrio(null);
+        }
 
         return mapToDTO(userRepository.save(user));
     }
@@ -74,6 +90,11 @@ public class UserServiceImpl implements UserService {
         }
         if (dto.phone() != null) user.setPhone(dto.phone());
         if (dto.address() != null) user.setAddress(dto.address());
+        if (dto.barrioId() != null) {
+            Barrio barrio = barrioRepository.findById(dto.barrioId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Barrio", dto.barrioId()));
+            user.setBarrio(barrio);
+        }
 
         return mapToDTO(userRepository.save(user));
     }
@@ -97,7 +118,8 @@ public class UserServiceImpl implements UserService {
             entity.getName(),
             entity.getEmail(),
             entity.getPhone(),
-            entity.getAddress()
+            entity.getAddress(),
+            entity.getBarrio() != null ? entity.getBarrio().getId() : null
         );
     }
 }

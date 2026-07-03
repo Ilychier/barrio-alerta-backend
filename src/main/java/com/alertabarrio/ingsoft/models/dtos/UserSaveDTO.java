@@ -19,5 +19,7 @@ public record UserSaveDTO(
 
     @NotBlank(message = "Address is required")
     @Size(max = 255, message = "Address must not exceed 255 characters")
-    String address
+    String address,
+
+    Long barrioId
 ) implements Serializable {}
