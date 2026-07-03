@@ -9,7 +9,7 @@ public interface EvidenciaService {
     EvidenciaResponseDTO save(EvidenciaSaveDTO dto);
     EvidenciaResponseDTO findById(Long id);
     EvidenciaResponseDTO update(Long id, EvidenciaSaveDTO dto);
-    EvidenciaResponseDTO patch(Long id, EvidenciaSaveDTO dto); // ¡Aquí cambiamos Alerta por Evidencia!
+    EvidenciaResponseDTO patch(Long id, EvidenciaSaveDTO dto);
     void delete(Long id);
-    Page<EvidenciaResponseDTO> findAllPaginated(Pageable pageable);
+    Page<EvidenciaResponseDTO> findAllPaginated(Long alertaId, Pageable pageable);
 }
