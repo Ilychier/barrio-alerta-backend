@@ -132,7 +132,8 @@ public class UsuarioBarrioServiceImpl implements UsuarioBarrioService {
                 entity.getUsuario().getName(),
                 entity.getUsuario().getEmail(),
                 entity.getUsuario().getPhone(),
-                entity.getUsuario().getAddress()
+                entity.getUsuario().getAddress(),
+                entity.getUsuario().getBarrio().getId()
             );
         }
 
