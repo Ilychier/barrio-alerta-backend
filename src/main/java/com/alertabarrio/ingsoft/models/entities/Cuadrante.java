@@ -24,7 +24,7 @@ public class Cuadrante {
     @Column(name = "nombre_unidad", nullable = false, unique = true, length = 100)
     private String nombreUnidad;
 
-    @Column(name = "telefono_emergencia", nullable = false, length = 15)
+    @Column(name = "telefono_emergencia", nullable = false, length = 100)
     private String telefonoEmergencia;
 
 }
