@@ -1,7 +1,12 @@
 package com.alertabarrio.ingsoft.controllers;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alertabarrio.ingsoft.models.dtos.AlertaResponseDTO;
@@ -59,7 +65,12 @@ public class AlertaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<AlertaResponseDTO>> findAllPaginated(Pageable pageable) {
-        return ResponseEntity.ok(alertaService.findAllPaginated(pageable));
+    public ResponseEntity<Page<AlertaResponseDTO>> findAllPaginated(
+            @RequestParam(required = false) 
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @PageableDefault(sort = "fechaHora", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        LocalDate fechaFiltro = (fecha != null) ? fecha : LocalDate.now();
+        return ResponseEntity.ok(alertaService.findByFecha(fechaFiltro, pageable));
     }
 }

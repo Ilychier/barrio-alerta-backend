@@ -1,9 +1,12 @@
 package com.alertabarrio.ingsoft.services.implementation;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 
 import com.alertabarrio.ingsoft.exceptions.ResourceNotFoundException;
 import com.alertabarrio.ingsoft.models.dtos.AlertaResponseDTO;
@@ -117,6 +120,14 @@ public class AlertaServicelmpl implements AlertaService {
     @Override
     public Page<AlertaResponseDTO> findAllPaginated(Pageable pageable) {
         return alertaRepository.findAll(pageable).map(this::mapToDTO);
+    }
+
+    @Override
+    public Page<AlertaResponseDTO> findByFecha(LocalDate fecha, Pageable pageable) {
+        LocalDateTime inicioDia = fecha.atStartOfDay(); 
+        LocalDateTime finDia = fecha.atTime(LocalTime.MAX); 
+        return alertaRepository.findByFechaHoraBetween(inicioDia, finDia, pageable)
+            .map(this::mapToDTO);
     }
 
     private AlertaResponseDTO mapToDTO(Alerta entity) {
