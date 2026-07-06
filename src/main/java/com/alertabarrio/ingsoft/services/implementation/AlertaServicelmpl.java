@@ -38,8 +38,11 @@ public class AlertaServicelmpl implements AlertaService {
         User user = userRepository.findById(dto.usuarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", dto.usuarioId()));
 
-        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria", dto.categoriaId()));
+        Categoria categoria = null;
+        if (dto.categoriaId() != null) {
+            categoria = categoriaRepository.findById(dto.categoriaId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria", dto.categoriaId()));
+        }
 
         Alerta alerta = new Alerta();
         alerta.setDescripcion(dto.descripcion());
@@ -66,8 +69,11 @@ public class AlertaServicelmpl implements AlertaService {
         User user = userRepository.findById(dto.usuarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", dto.usuarioId()));
 
-        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria", dto.categoriaId()));
+        Categoria categoria = null;
+        if (dto.categoriaId() != null) {
+            categoria = categoriaRepository.findById(dto.categoriaId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria", dto.categoriaId()));
+        }
 
         alerta.setDescripcion(dto.descripcion());
         alerta.setEsSos(dto.esSos());
