@@ -39,7 +39,7 @@ public class AlertaController {
     }
 
     @PostMapping
-    public ResponseEntity<AlertaResponseDTO> save(@Valid @RequestBody AlertaSaveDTO dto) {
+    public ResponseEntity<AlertaResponseDTO> create(@Valid @RequestBody AlertaSaveDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(alertaService.save(dto));
     }
 
