@@ -41,7 +41,8 @@ private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findById(id));
+        UserResponseDTO userResponseDTO = userService.findById(id);
+        return ResponseEntity.ok(userResponseDTO);
     }
 
     @PutMapping("/{id}")

@@ -1,7 +1,9 @@
 package com.alertabarrio.ingsoft.models.dtos;
 
 import java.io.Serializable;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record AlertaSaveDTO(
     @NotBlank(message = "La descripción es requerida")
@@ -13,6 +15,5 @@ public record AlertaSaveDTO(
     @NotNull(message = "El ID del usuario es requerido")
     Long usuarioId,
 
-    @NotNull(message = "El ID de la categoría es requerido")
     Long categoriaId
 ) implements Serializable {}
