@@ -3,6 +3,7 @@ package com.alertabarrio.ingsoft.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -144,6 +145,57 @@ public class UserServiceTest {
         assertEquals("Juan Perez", result.name());
         assertEquals("juan@test.com", result.email());
         assertEquals(1L, result.barrioId());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserDoesNotExist() {
+
+        when(userRepository.findById(999L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> userService.findById(999L)
+        );
+
+        ResourceNotFoundException exception =
+            assertThrows(
+                    ResourceNotFoundException.class,
+                    () -> userService.findById(999L)
+            );
+
+        assertEquals(
+                "User with ID 999 not found in the database.",
+                exception.getMessage()
+        );
+
+    }
+
+    @Test
+    void shouldDeleteUserSuccessfully() {
+
+        when(userRepository.existsById(10L))
+                .thenReturn(true);
+
+        userService.delete(10L);
+
+        verify(userRepository).deleteById(10L);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDeletingNonExistingUser() {
+
+        when(userRepository.existsById(999L))
+                .thenReturn(false);
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> userService.delete(999L)
+        );
+
+        verify(userRepository, never())
+            .deleteById(anyLong());
+
     }
 
 }
