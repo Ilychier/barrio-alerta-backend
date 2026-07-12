@@ -21,6 +21,7 @@ import com.alertabarrio.ingsoft.models.dtos.UserSaveDTO;
 import com.alertabarrio.ingsoft.services.UserService;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -37,6 +38,13 @@ private final UserService userService;
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserSaveDTO userSaveDTO) {
         UserResponseDTO savedUser = userService.save(userSaveDTO);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMe(HttpServletRequest request) {
+        String email = (String) request.getAttribute("currentUserEmail");
+        UserResponseDTO userResponseDTO = userService.findByEmail(email);
+        return ResponseEntity.ok(userResponseDTO);
     }
 
     @GetMapping("/{id}")
