@@ -198,4 +198,157 @@ public class UserServiceTest {
 
     }
 
+    @Test
+    void shouldUpdateUserSuccessfully() {
+
+        Barrio barrio = new Barrio();
+        barrio.setId(1L);
+
+        User existingUser = new User();
+        existingUser.setId(10L);
+        existingUser.setName("Nombre Viejo");
+        existingUser.setEmail("viejo@test.com");
+        existingUser.setPhone("+573000000000");
+        existingUser.setAddress("Direccion Vieja");
+        existingUser.setBarrio(barrio);
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan Perez",
+                "juan@test.com",
+                "+573001112233",
+                "Calle 1",
+                1L
+        );
+
+        User updatedUser = new User();
+        updatedUser.setId(10L);
+        updatedUser.setName(dto.name());
+        updatedUser.setEmail(dto.email());
+        updatedUser.setPhone(dto.phone());
+        updatedUser.setAddress(dto.address());
+        updatedUser.setBarrio(barrio);
+
+        when(userRepository.findById(10L))
+                .thenReturn(Optional.of(existingUser));
+
+        when(userRepository.existsByEmail(dto.email()))
+                .thenReturn(false);
+
+        when(barrioRepository.findById(1L))
+                .thenReturn(Optional.of(barrio));
+
+        when(userRepository.save(any(User.class)))
+                .thenReturn(updatedUser);
+
+        UserResponseDTO result = userService.update(10L, dto);
+
+        assertEquals(10L, result.id());
+        assertEquals("Juan Perez", result.name());
+        assertEquals("juan@test.com", result.email());
+        assertEquals(1L, result.barrioId());
+
+        verify(userRepository).save(any(User.class));
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistingUser() {
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan Perez",
+                "juan@test.com",
+                "+573001112233",
+                "Calle 1",
+                1L
+        );
+
+        when(userRepository.findById(999L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> userService.update(999L, dto)
+        );
+
+        verify(userRepository, never())
+                .save(any(User.class));
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingWithDuplicateEmail() {
+
+        Barrio barrio = new Barrio();
+        barrio.setId(1L);
+
+        User existingUser = new User();
+        existingUser.setId(10L);
+        existingUser.setName("Juan");
+        existingUser.setEmail("viejo@test.com");
+        existingUser.setPhone("+573001112233");
+        existingUser.setAddress("Calle 1");
+        existingUser.setBarrio(barrio);
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan",
+                "existente@test.com",
+                "+573001112233",
+                "Calle 1",
+                1L
+        );
+
+        when(userRepository.findById(10L))
+                .thenReturn(Optional.of(existingUser));
+
+        when(userRepository.existsByEmail("existente@test.com"))
+                .thenReturn(true);
+
+        assertThrows(
+                ResourceConflictException.class,
+                () -> userService.update(10L, dto)
+        );
+
+        verify(userRepository, never())
+                .save(any(User.class));
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingWithNonExistingBarrio() {
+
+        Barrio barrio = new Barrio();
+        barrio.setId(1L);
+
+        User existingUser = new User();
+        existingUser.setId(10L);
+        existingUser.setName("Juan");
+        existingUser.setEmail("juan@test.com");
+        existingUser.setPhone("+573001112233");
+        existingUser.setAddress("Calle 1");
+        existingUser.setBarrio(barrio);
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan Actualizado",
+                "juan@test.com",
+                "+573001112233",
+                "Calle 2",
+                999L
+        );
+
+        when(userRepository.findById(10L))
+                .thenReturn(Optional.of(existingUser));
+
+        when(barrioRepository.findById(999L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> userService.update(10L, dto)
+        );
+
+        verify(userRepository, never())
+                .save(any(User.class));
+
+    }
+
 }
