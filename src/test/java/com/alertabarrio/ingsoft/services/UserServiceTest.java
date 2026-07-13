@@ -351,4 +351,102 @@ public class UserServiceTest {
 
     }
 
+    @Test
+    void shouldPatchOnlyNameSuccessfully() {
+
+        Barrio barrio = new Barrio();
+        barrio.setId(1L);
+
+        User existingUser = new User();
+        existingUser.setId(10L);
+        existingUser.setName("Juan Perez");
+        existingUser.setEmail("juan@test.com");
+        existingUser.setPhone("+573001112233");
+        existingUser.setAddress("Calle 1");
+        existingUser.setBarrio(barrio);
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan Actualizado",
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(userRepository.findById(10L))
+                .thenReturn(Optional.of(existingUser));
+
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponseDTO result = userService.patch(10L, dto);
+
+        assertEquals("Juan Actualizado", result.name());
+        assertEquals("juan@test.com", result.email());
+        assertEquals("+573001112233", result.phone());
+        assertEquals("Calle 1", result.address());
+
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPatchingWithDuplicateEmail() {
+
+        Barrio barrio = new Barrio();
+        barrio.setId(1L);
+
+        User existingUser = new User();
+        existingUser.setId(10L);
+        existingUser.setName("Juan");
+        existingUser.setEmail("juan@test.com");
+        existingUser.setPhone("+573001112233");
+        existingUser.setAddress("Calle 1");
+        existingUser.setBarrio(barrio);
+
+        UserSaveDTO dto = new UserSaveDTO(
+                null,
+                "existente@test.com",
+                null,
+                null,
+                null
+        );
+
+        when(userRepository.findById(10L))
+                .thenReturn(Optional.of(existingUser));
+
+        when(userRepository.existsByEmail("existente@test.com"))
+                .thenReturn(true);
+
+        assertThrows(
+                ResourceConflictException.class,
+                () -> userService.patch(10L, dto)
+        );
+
+        verify(userRepository, never())
+                .save(any(User.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPatchingNonExistingUser() {
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Nuevo Nombre",
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(userRepository.findById(999L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> userService.patch(999L, dto)
+        );
+
+        verify(userRepository, never())
+                .save(any(User.class));
+    }
+
 }
