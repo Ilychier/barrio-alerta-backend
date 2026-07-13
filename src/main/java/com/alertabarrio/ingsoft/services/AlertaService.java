@@ -16,4 +16,5 @@ public interface AlertaService {
     void delete(Long id);
     Page<AlertaResponseDTO> findAllPaginated(Pageable pageable);
     Page<AlertaResponseDTO> findByFecha(LocalDate fecha, Pageable pageable);
+    Page<AlertaResponseDTO> findByBarrioAndFecha(Long barrioId, LocalDate fecha, Pageable pageable);
 }

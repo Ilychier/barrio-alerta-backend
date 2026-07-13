@@ -21,5 +21,8 @@ public record UserSaveDTO(
     @Size(max = 255, message = "Address must not exceed 255 characters")
     String address,
 
-    Long barrioId
+    Long barrioId,
+
+    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
+    String password
 ) implements Serializable {}

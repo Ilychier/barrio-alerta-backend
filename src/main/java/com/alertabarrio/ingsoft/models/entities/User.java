@@ -36,6 +36,9 @@ public class User {
     @Column(name = "address", nullable = false, length = 255)
     private String address;
 
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "barrio_id", nullable = false)
     private Barrio barrio;

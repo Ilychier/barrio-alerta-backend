@@ -39,25 +39,34 @@ public class ConfiguracionServicelmpl implements ConfiguracionService {
         return mapToDTO(configuracionRepository.save(config));
     }
 
-    @Override
-    public ConfiguracionResponseDTO findById(Long id) {
-        // First try finding by usuarioId, as frontend passes user ID in the path parameter
+    private Configuracion getOrCreateConfig(Long id) {
         Configuracion config = configuracionRepository.findByUsuarioId(id).orElse(null);
         if (config == null) {
-            // Fallback to finding by configuration's own ID
-            config = configuracionRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Configuracion", id));
+            config = configuracionRepository.findById(id).orElse(null);
         }
-        return mapToDTO(config);
+        if (config == null) {
+            User user = userRepository.findById(id).orElse(null);
+            if (user != null) {
+                config = new Configuracion();
+                config.setUsuario(user);
+                config.setRecibirNotificaciones(true);
+                config.setModoSilencioso(false);
+                config = configuracionRepository.save(config);
+            } else {
+                throw new ResourceNotFoundException("Configuracion", id);
+            }
+        }
+        return config;
+    }
+
+    @Override
+    public ConfiguracionResponseDTO findById(Long id) {
+        return mapToDTO(getOrCreateConfig(id));
     }
 
     @Override
     public ConfiguracionResponseDTO update(Long id, ConfiguracionSaveDTO dto) {
-        Configuracion config = configuracionRepository.findByUsuarioId(id).orElse(null);
-        if (config == null) {
-            config = configuracionRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Configuracion", id));
-        }
+        Configuracion config = getOrCreateConfig(id);
 
         User user = userRepository.findById(dto.usuarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", dto.usuarioId()));
@@ -71,11 +80,7 @@ public class ConfiguracionServicelmpl implements ConfiguracionService {
 
     @Override
     public ConfiguracionResponseDTO patch(Long id, ConfiguracionSaveDTO dto) {
-        Configuracion config = configuracionRepository.findByUsuarioId(id).orElse(null);
-        if (config == null) {
-            config = configuracionRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Configuracion", id));
-        }
+        Configuracion config = getOrCreateConfig(id);
 
         if (dto.usuarioId() != null) {
             User user = userRepository.findById(dto.usuarioId())
