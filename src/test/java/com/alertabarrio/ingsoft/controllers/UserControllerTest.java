@@ -10,10 +10,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
@@ -248,6 +254,102 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(dto))
         )
         .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    void shouldPatchUserSuccessfully() throws Exception {
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan Actualizado",
+                null,
+                null,
+                null,
+                null
+        );
+
+        UserResponseDTO response = new UserResponseDTO(
+                1L,
+                "Juan Actualizado",
+                "juan@test.com",
+                "+573001112233",
+                "Calle 1",
+                1L
+        );
+
+        when(userService.patch(eq(1L), any(UserSaveDTO.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(
+                patch("/api/usuarios/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+        )
+        .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenPatchingNonExistingUser() throws Exception {
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan Actualizado",
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(userService.patch(eq(999L), any(UserSaveDTO.class)))
+                .thenThrow(new ResourceNotFoundException("User", 999L));
+
+        mockMvc.perform(
+                patch("/api/usuarios/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+        )
+        .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    void shouldGetUsersPageSuccessfully() throws Exception {
+
+        UserResponseDTO user = new UserResponseDTO(
+                1L,
+                "Juan Perez",
+                "juan@test.com",
+                "+573001112233",
+                "Calle 1",
+                1L
+        );
+
+        Page<UserResponseDTO> page =
+                new PageImpl<>(List.of(user));
+
+        when(userService.findAllPaginated(any(Pageable.class)))
+                .thenReturn(page);
+
+        mockMvc.perform(
+                get("/api/usuarios")
+        )
+        .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void shouldReturnEmptyPageWhenNoUsersExist() throws Exception {
+
+        Page<UserResponseDTO> page =
+                new PageImpl<>(List.of());
+
+        when(userService.findAllPaginated(any(Pageable.class)))
+                .thenReturn(page);
+
+        mockMvc.perform(
+                get("/api/usuarios")
+        )
+        .andExpect(status().isOk());
 
     }
 
