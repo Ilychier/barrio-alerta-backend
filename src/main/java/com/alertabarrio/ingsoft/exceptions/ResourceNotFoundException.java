@@ -8,4 +8,8 @@ public class ResourceNotFoundException extends BaseBusinessException {
         super(resourceName + " with ID " + id + " not found in the database.", HttpStatus.NOT_FOUND);
     }
 
+    public ResourceNotFoundException(String message) {
+        super(message, HttpStatus.NOT_FOUND);
+    }
+
 }

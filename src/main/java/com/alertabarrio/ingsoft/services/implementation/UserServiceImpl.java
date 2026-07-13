@@ -10,6 +10,7 @@ import com.alertabarrio.ingsoft.models.dtos.UserResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.UserSaveDTO;
 import com.alertabarrio.ingsoft.models.entities.User;
 import com.alertabarrio.ingsoft.models.entities.Barrio;
+import org.mindrot.jbcrypt.BCrypt;
 import com.alertabarrio.ingsoft.repositories.UserRepository;
 import com.alertabarrio.ingsoft.repositories.BarrioRepository;
 import com.alertabarrio.ingsoft.services.UserService;
@@ -31,11 +32,16 @@ public class UserServiceImpl implements UserService {
             throw new ResourceConflictException("A user with the email '" + dto.email() + "' already exists.");
         }
 
+        if (dto.password() == null || dto.password().isBlank()) {
+            throw new IllegalArgumentException("Password is required for registration.");
+        }
+
         User user = new User();
         user.setName(dto.name());
         user.setEmail(dto.email());
         user.setPhone(dto.phone());
         user.setAddress(dto.address());
+        user.setPassword(BCrypt.hashpw(dto.password(), BCrypt.gensalt()));
         if (dto.barrioId() != null) {
             Barrio barrio = barrioRepository.findById(dto.barrioId())
                     .orElseThrow(() -> new ResourceNotFoundException("Barrio", dto.barrioId()));
@@ -65,6 +71,9 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.email());
         user.setPhone(dto.phone());
         user.setAddress(dto.address());
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(BCrypt.hashpw(dto.password(), BCrypt.gensalt()));
+        }
         if (dto.barrioId() != null) {
             Barrio barrio = barrioRepository.findById(dto.barrioId())
                     .orElseThrow(() -> new ResourceNotFoundException("Barrio", dto.barrioId()));
@@ -90,6 +99,9 @@ public class UserServiceImpl implements UserService {
         }
         if (dto.phone() != null) user.setPhone(dto.phone());
         if (dto.address() != null) user.setAddress(dto.address());
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(BCrypt.hashpw(dto.password(), BCrypt.gensalt()));
+        }
         if (dto.barrioId() != null) {
             Barrio barrio = barrioRepository.findById(dto.barrioId())
                     .orElseThrow(() -> new ResourceNotFoundException("Barrio", dto.barrioId()));
@@ -121,5 +133,12 @@ public class UserServiceImpl implements UserService {
             entity.getAddress(),
             entity.getBarrio() != null ? entity.getBarrio().getId() : null
         );
+    }
+
+    @Override
+    public UserResponseDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("A user with the email '" + email + "' was not found."));
+        return mapToDTO(user);
     }
 }
