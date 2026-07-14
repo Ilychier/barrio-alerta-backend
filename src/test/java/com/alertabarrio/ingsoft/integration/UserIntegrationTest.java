@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alertabarrio.ingsoft.exceptions.ResourceConflictException;
@@ -15,6 +17,7 @@ import com.alertabarrio.ingsoft.models.entities.Barrio;
 import com.alertabarrio.ingsoft.models.entities.Cuadrante;
 import com.alertabarrio.ingsoft.repositories.BarrioRepository;
 import com.alertabarrio.ingsoft.repositories.CuadranteRepository;
+import com.alertabarrio.ingsoft.repositories.UserRepository;
 import com.alertabarrio.ingsoft.services.UserService;
 
 @SpringBootTest
@@ -29,6 +32,9 @@ class UserIntegrationTest {
 
     @Autowired
     private CuadranteRepository cuadranteRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void shouldCreateUserSuccessfully() {
@@ -250,6 +256,249 @@ class UserIntegrationTest {
         assertThrows(
             ResourceConflictException.class,
             () -> userService.update(user2.id(), updateDto)
+        );
+    }
+
+    @Test
+    void shouldPatchUserSuccessfully() {
+
+        Cuadrante cuadrante = new Cuadrante();
+        cuadrante.setNombreUnidad("Unidad IT-USR-009");
+        cuadrante.setTelefonoEmergencia("3000000009");
+        cuadrante = cuadranteRepository.save(cuadrante);
+
+        Barrio barrio = new Barrio();
+        barrio.setNombre("Barrio IT-USR-009");
+        barrio.setCuadrante(cuadrante);
+        barrio = barrioRepository.save(barrio);
+
+        UserResponseDTO created = userService.save(
+            new UserSaveDTO(
+                "Usuario Original",
+                "original009@test.com",
+                "3001111111",
+                "Direccion Original",
+                barrio.getId()
+            )
+        );
+
+        UserSaveDTO patchDto = new UserSaveDTO(
+            "Usuario Modificado",
+            null,
+            null,
+            null,
+            null
+        );
+
+        UserResponseDTO patched =
+                userService.patch(created.id(), patchDto);
+
+        assertEquals("Usuario Modificado", patched.name());
+        assertEquals("original009@test.com", patched.email());
+        assertEquals("3001111111", patched.phone());
+        assertEquals("Direccion Original", patched.address());
+        assertEquals(barrio.getId(), patched.barrioId());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPatchingNonExistingUser() {
+
+        UserSaveDTO patchDto = new UserSaveDTO(
+            "Nuevo Nombre",
+            null,
+            null,
+            null,
+            null
+        );
+
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> userService.patch(999999L, patchDto)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPatchingDuplicatedEmail() {
+
+        Cuadrante cuadrante = new Cuadrante();
+        cuadrante.setNombreUnidad("Unidad IT-USR-011");
+        cuadrante.setTelefonoEmergencia("3000000011");
+        cuadrante = cuadranteRepository.save(cuadrante);
+
+        Barrio barrio = new Barrio();
+        barrio.setNombre("Barrio IT-USR-011");
+        barrio.setCuadrante(cuadrante);
+        barrio = barrioRepository.save(barrio);
+
+        UserResponseDTO user1 = userService.save(
+            new UserSaveDTO(
+                "Usuario 1",
+                "user1patch@test.com",
+                "3001111111",
+                "Dir1",
+                barrio.getId()
+            )
+        );
+
+        UserResponseDTO user2 = userService.save(
+            new UserSaveDTO(
+                "Usuario 2",
+                "user2patch@test.com",
+                "3002222222",
+                "Dir2",
+                barrio.getId()
+            )
+        );
+
+        UserSaveDTO patchDto = new UserSaveDTO(
+            null,
+            "user1patch@test.com",
+            null,
+            null,
+            null
+        );
+
+        assertThrows(
+            ResourceConflictException.class,
+            () -> userService.patch(user2.id(), patchDto)
+        );
+    }
+
+    @Test
+    void shouldReturnPaginatedUsers() {
+
+        Cuadrante cuadrante = new Cuadrante();
+        cuadrante.setNombreUnidad("Unidad IT-USR-012");
+        cuadrante.setTelefonoEmergencia("3000000012");
+        cuadrante = cuadranteRepository.save(cuadrante);
+
+        Barrio barrio = new Barrio();
+        barrio.setNombre("Barrio IT-USR-012");
+        barrio.setCuadrante(cuadrante);
+        barrio = barrioRepository.save(barrio);
+
+        userService.save(new UserSaveDTO(
+            "Usuario 1",
+            "user1page@test.com",
+            "3001111111",
+            "Dir1",
+            barrio.getId()
+        ));
+
+        userService.save(new UserSaveDTO(
+            "Usuario 2",
+            "user2page@test.com",
+            "3002222222",
+            "Dir2",
+            barrio.getId()
+        ));
+
+        Page<UserResponseDTO> page =
+            userService.findAllPaginated(PageRequest.of(0, 10));
+
+        assertFalse(page.isEmpty());
+        assertTrue(page.getContent().size() >= 2);
+    }
+
+    @Test
+    void shouldReturnEmptyPageWhenNoUsersExist() {
+
+        userRepository.deleteAll();
+
+        Page<UserResponseDTO> page =
+            userService.findAllPaginated(PageRequest.of(0, 10));
+
+        assertTrue(page.isEmpty());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSavingWithNonExistingBarrio() {
+
+        UserSaveDTO dto = new UserSaveDTO(
+            "Usuario",
+            "barrioinexistente@test.com",
+            "3001111111",
+            "Direccion",
+            999999L
+        );
+
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> userService.save(dto)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingWithNonExistingBarrio() {
+
+        Cuadrante cuadrante = new Cuadrante();
+        cuadrante.setNombreUnidad("Unidad IT-USR-015");
+        cuadrante.setTelefonoEmergencia("3000000015");
+        cuadrante = cuadranteRepository.save(cuadrante);
+
+        Barrio barrio = new Barrio();
+        barrio.setNombre("Barrio IT-USR-015");
+        barrio.setCuadrante(cuadrante);
+        barrio = barrioRepository.save(barrio);
+
+        UserResponseDTO user = userService.save(
+            new UserSaveDTO(
+                "Usuario",
+                "updatebarrio@test.com",
+                "3001111111",
+                "Direccion",
+                barrio.getId()
+            )
+        );
+
+        UserSaveDTO updateDto = new UserSaveDTO(
+            "Usuario",
+            "updatebarrio@test.com",
+            "3001111111",
+            "Direccion",
+            999999L
+        );
+
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> userService.update(user.id(), updateDto)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPatchingWithNonExistingBarrio() {
+
+        Cuadrante cuadrante = new Cuadrante();
+        cuadrante.setNombreUnidad("Unidad IT-USR-016");
+        cuadrante.setTelefonoEmergencia("3000000016");
+        cuadrante = cuadranteRepository.save(cuadrante);
+
+        Barrio barrio = new Barrio();
+        barrio.setNombre("Barrio IT-USR-016");
+        barrio.setCuadrante(cuadrante);
+        barrio = barrioRepository.save(barrio);
+
+        UserResponseDTO user = userService.save(
+            new UserSaveDTO(
+                "Usuario",
+                "patchbarrio@test.com",
+                "3001111111",
+                "Direccion",
+                barrio.getId()
+            )
+        );
+
+        UserSaveDTO patchDto = new UserSaveDTO(
+            null,
+            null,
+            null,
+            null,
+            999999L
+        );
+
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> userService.patch(user.id(), patchDto)
         );
     }
 
