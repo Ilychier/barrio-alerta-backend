@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alertabarrio.ingsoft.exceptions.ResourceConflictException;
 import com.alertabarrio.ingsoft.exceptions.ResourceNotFoundException;
 import com.alertabarrio.ingsoft.models.dtos.UserResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.UserSaveDTO;
@@ -145,6 +146,110 @@ class UserIntegrationTest {
         assertThrows(
             ResourceNotFoundException.class,
             () -> userService.delete(999999L)
+        );
+    }
+
+    @Test
+    void shouldUpdateUserSuccessfully() {
+
+        Cuadrante cuadrante = new Cuadrante();
+        cuadrante.setNombreUnidad("Unidad IT-USR-006");
+        cuadrante.setTelefonoEmergencia("3000000006");
+        cuadrante = cuadranteRepository.save(cuadrante);
+
+        Barrio barrio = new Barrio();
+        barrio.setNombre("Barrio IT-USR-006");
+        barrio.setCuadrante(cuadrante);
+        barrio = barrioRepository.save(barrio);
+
+        UserSaveDTO createDto = new UserSaveDTO(
+            "Usuario Original",
+            "original@test.com",
+            "3001111111",
+            "Direccion Original",
+            barrio.getId()
+        );
+
+        UserResponseDTO created = userService.save(createDto);
+
+        UserSaveDTO updateDto = new UserSaveDTO(
+            "Usuario Actualizado",
+            "actualizado@test.com",
+            "3009999999",
+            "Direccion Actualizada",
+            barrio.getId()
+        );
+
+        UserResponseDTO updated =
+                userService.update(created.id(), updateDto);
+
+        assertEquals("Usuario Actualizado", updated.name());
+        assertEquals("actualizado@test.com", updated.email());
+        assertEquals("3009999999", updated.phone());
+        assertEquals("Direccion Actualizada", updated.address());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistingUser() {
+
+        UserSaveDTO dto = new UserSaveDTO(
+            "Usuario",
+            "usuario@test.com",
+            "3001111111",
+            "Direccion",
+            null
+        );
+
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> userService.update(999999L, dto)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingWithDuplicatedEmail() {
+
+        Cuadrante cuadrante = new Cuadrante();
+        cuadrante.setNombreUnidad("Unidad IT-USR-008");
+        cuadrante.setTelefonoEmergencia("3000000008");
+        cuadrante = cuadranteRepository.save(cuadrante);
+
+        Barrio barrio = new Barrio();
+        barrio.setNombre("Barrio IT-USR-008");
+        barrio.setCuadrante(cuadrante);
+        barrio = barrioRepository.save(barrio);
+
+        UserResponseDTO user1 = userService.save(
+            new UserSaveDTO(
+                "Usuario 1",
+                "user1@test.com",
+                "3001111111",
+                "Dir1",
+                barrio.getId()
+            )
+        );
+
+        UserResponseDTO user2 = userService.save(
+            new UserSaveDTO(
+                "Usuario 2",
+                "user2@test.com",
+                "3002222222",
+                "Dir2",
+                barrio.getId()
+            )
+        );
+
+        UserSaveDTO updateDto = new UserSaveDTO(
+            "Usuario 2",
+            "user1@test.com",
+            "3002222222",
+            "Dir2",
+            barrio.getId()
+        );
+
+        assertThrows(
+            ResourceConflictException.class,
+            () -> userService.update(user2.id(), updateDto)
         );
     }
 
