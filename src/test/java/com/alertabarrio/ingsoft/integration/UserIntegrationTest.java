@@ -56,7 +56,8 @@ class UserIntegrationTest {
             "integracion2@test.com",
             "+573001112200",
             "Calle Integracion",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         );
 
         UserResponseDTO saved = userService.save(dto);
@@ -89,7 +90,8 @@ class UserIntegrationTest {
             "buscar@test.com",
             "+573001111111",
             "Calle Buscar",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         );
 
         UserResponseDTO created = userService.save(dto);
@@ -133,7 +135,8 @@ class UserIntegrationTest {
             "eliminar@test.com",
             "3001111111",
             "Direccion",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         );
 
         UserResponseDTO created = userService.save(dto);
@@ -173,7 +176,8 @@ class UserIntegrationTest {
             "original@test.com",
             "3001111111",
             "Direccion Original",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         );
 
         UserResponseDTO created = userService.save(createDto);
@@ -183,7 +187,8 @@ class UserIntegrationTest {
             "actualizado@test.com",
             "3009999999",
             "Direccion Actualizada",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         );
 
         UserResponseDTO updated =
@@ -203,7 +208,8 @@ class UserIntegrationTest {
             "usuario@test.com",
             "3001111111",
             "Direccion",
-            null
+            null,
+            "password123"
         );
 
         assertThrows(
@@ -231,7 +237,8 @@ class UserIntegrationTest {
                 "user1@test.com",
                 "3001111111",
                 "Dir1",
-                barrio.getId()
+                barrio.getId(),
+                "password123"
             )
         );
 
@@ -241,7 +248,8 @@ class UserIntegrationTest {
                 "user2@test.com",
                 "3002222222",
                 "Dir2",
-                barrio.getId()
+                barrio.getId(),
+                "password123"
             )
         );
 
@@ -250,7 +258,8 @@ class UserIntegrationTest {
             "user1@test.com",
             "3002222222",
             "Dir2",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         );
 
         assertThrows(
@@ -278,12 +287,14 @@ class UserIntegrationTest {
                 "original009@test.com",
                 "3001111111",
                 "Direccion Original",
-                barrio.getId()
+                barrio.getId(),
+                "password123"
             )
         );
 
         UserSaveDTO patchDto = new UserSaveDTO(
             "Usuario Modificado",
+            null,
             null,
             null,
             null,
@@ -305,6 +316,7 @@ class UserIntegrationTest {
 
         UserSaveDTO patchDto = new UserSaveDTO(
             "Nuevo Nombre",
+            null,
             null,
             null,
             null,
@@ -336,7 +348,8 @@ class UserIntegrationTest {
                 "user1patch@test.com",
                 "3001111111",
                 "Dir1",
-                barrio.getId()
+                barrio.getId(),
+                "password123"
             )
         );
 
@@ -346,13 +359,15 @@ class UserIntegrationTest {
                 "user2patch@test.com",
                 "3002222222",
                 "Dir2",
-                barrio.getId()
+                barrio.getId(),
+                "password123"
             )
         );
 
         UserSaveDTO patchDto = new UserSaveDTO(
             null,
             "user1patch@test.com",
+            null,
             null,
             null,
             null
@@ -382,7 +397,8 @@ class UserIntegrationTest {
             "user1page@test.com",
             "3001111111",
             "Dir1",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         ));
 
         userService.save(new UserSaveDTO(
@@ -390,7 +406,8 @@ class UserIntegrationTest {
             "user2page@test.com",
             "3002222222",
             "Dir2",
-            barrio.getId()
+            barrio.getId(),
+            "password123"
         ));
 
         Page<UserResponseDTO> page =
@@ -419,7 +436,8 @@ class UserIntegrationTest {
             "barrioinexistente@test.com",
             "3001111111",
             "Direccion",
-            999999L
+            999999L,
+            "password123"
         );
 
         assertThrows(
@@ -447,7 +465,8 @@ class UserIntegrationTest {
                 "updatebarrio@test.com",
                 "3001111111",
                 "Direccion",
-                barrio.getId()
+                barrio.getId(),
+                "password123"
             )
         );
 
@@ -456,7 +475,8 @@ class UserIntegrationTest {
             "updatebarrio@test.com",
             "3001111111",
             "Direccion",
-            999999L
+            999999L,
+            "password123"
         );
 
         assertThrows(
@@ -484,7 +504,8 @@ class UserIntegrationTest {
                 "patchbarrio@test.com",
                 "3001111111",
                 "Direccion",
-                barrio.getId()
+                barrio.getId(),
+                "password123"
             )
         );
 
@@ -493,7 +514,8 @@ class UserIntegrationTest {
             null,
             null,
             null,
-            999999L
+            999999L,
+            null
         );
 
         assertThrows(
