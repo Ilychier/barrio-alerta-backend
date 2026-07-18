@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -24,11 +25,16 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 
+import com.alertabarrio.ingsoft.config.AuthInterceptor;
 import com.alertabarrio.ingsoft.exceptions.ResourceNotFoundException;
 import com.alertabarrio.ingsoft.models.dtos.UserResponseDTO;
 import com.alertabarrio.ingsoft.models.dtos.UserSaveDTO;
+import com.alertabarrio.ingsoft.services.JwtService;
 import com.alertabarrio.ingsoft.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @WebMvcTest(UserController.class)
 class UserControllerTest {
@@ -39,7 +45,22 @@ class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private AuthInterceptor authInterceptor;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void setup() throws Exception {
+        when(authInterceptor.preHandle(
+                any(HttpServletRequest.class),
+                any(HttpServletResponse.class),
+                any()))
+            .thenReturn(true);
+    }
 
     @Test
     void shouldCreateUserSuccessfully() throws Exception {
@@ -49,7 +70,8 @@ class UserControllerTest {
                 "juan@test.com",
                 "+573001112233",
                 "Calle 1",
-                1L
+                1L,
+                "password123"
         );
 
         UserResponseDTO response = new UserResponseDTO(
@@ -206,11 +228,12 @@ class UserControllerTest {
     void shouldUpdateUserSuccessfully() throws Exception {
 
         UserSaveDTO dto = new UserSaveDTO(
-                "Juan Actualizado",
+                "Juan Perez",
                 "juan@test.com",
                 "+573001112233",
                 "Nueva direccion",
-                1L
+                1L,
+                "password123"
         );
 
         UserResponseDTO response = new UserResponseDTO(
@@ -242,7 +265,8 @@ class UserControllerTest {
                 "juan@test.com",
                 "+573001112233",
                 "Calle 1",
-                1L
+                1L,
+                "password123"
         );
 
         when(userService.update(eq(999L), any(UserSaveDTO.class)))
@@ -262,6 +286,7 @@ class UserControllerTest {
 
         UserSaveDTO dto = new UserSaveDTO(
                 "Juan Actualizado",
+                null,
                 null,
                 null,
                 null,
@@ -294,6 +319,7 @@ class UserControllerTest {
 
         UserSaveDTO dto = new UserSaveDTO(
                 "Juan Actualizado",
+                null,
                 null,
                 null,
                 null,
@@ -351,6 +377,45 @@ class UserControllerTest {
         )
         .andExpect(status().isOk());
 
+    }
+
+    @Test
+    void shouldGetCurrentUserSuccessfully() throws Exception {
+
+        UserResponseDTO response = new UserResponseDTO(
+                1L,
+                "Juan Perez",
+                "juan@test.com",
+                "+573001112233",
+                "Calle 1",
+                1L
+        );
+
+        when(userService.findByEmail("juan@test.com"))
+                .thenReturn(response);
+
+        mockMvc.perform(
+                get("/api/usuarios/me")
+                        .requestAttr("currentUserEmail", "juan@test.com")
+        )
+        .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenCurrentUserDoesNotExist() throws Exception {
+
+        when(userService.findByEmail("inexistente@test.com"))
+                .thenThrow(
+                        new ResourceNotFoundException(
+                                "A user with the email 'inexistente@test.com' was not found."
+                        )
+                );
+
+        mockMvc.perform(
+                get("/api/usuarios/me")
+                        .requestAttr("currentUserEmail", "inexistente@test.com")
+        )
+        .andExpect(status().isNotFound());
     }
 
 }
