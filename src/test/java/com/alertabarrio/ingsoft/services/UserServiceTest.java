@@ -41,11 +41,12 @@ public class UserServiceTest {
     @Test
     void shouldThrowExceptionWhenEmailAlreadyExists() {
         UserSaveDTO dto = new UserSaveDTO(
-            "Juan Perez",
-            "juan@test.com",
-            "+573001112233",
-            "Calle 1",
-            1L
+        "Juan Perez",
+        "juan@test.com",
+        "+573001112233",
+        "Calle 1",
+        1L,
+        "password123"
         );
 
         when(userRepository.existsByEmail("juan@test.com"))
@@ -61,11 +62,12 @@ public class UserServiceTest {
     void shouldSaveUserSuccessfully() {
 
         UserSaveDTO dto = new UserSaveDTO(
-                "Juan Perez",
-                "juan@test.com",
-                "+573001112233",
-                "Calle 1",
-                1L
+        "Juan Perez",
+        "juan@test.com",
+        "+573001112233",
+        "Calle 1",
+        1L,
+        "password123"
         );
 
         Barrio barrio = new Barrio();
@@ -101,11 +103,12 @@ public class UserServiceTest {
     void shouldThrowExceptionWhenBarrioDoesNotExist() {
 
         UserSaveDTO dto = new UserSaveDTO(
-                "Juan Perez",
-                "juan@test.com",
-                "+573001112233",
-                "Calle 1",
-                999L
+        "Juan Perez",
+        "juan@test.com",
+        "+573001112233",
+        "Calle 1",
+        999L,
+        "password123"
         );
 
         when(userRepository.existsByEmail(dto.email()))
@@ -213,11 +216,12 @@ public class UserServiceTest {
         existingUser.setBarrio(barrio);
 
         UserSaveDTO dto = new UserSaveDTO(
-                "Juan Perez",
-                "juan@test.com",
-                "+573001112233",
-                "Calle 1",
-                1L
+        "Juan Perez",
+        "juan@test.com",
+        "+573001112233",
+        "Calle 1",
+        1L,
+        "password123"
         );
 
         User updatedUser = new User();
@@ -255,11 +259,12 @@ public class UserServiceTest {
     void shouldThrowExceptionWhenUpdatingNonExistingUser() {
 
         UserSaveDTO dto = new UserSaveDTO(
-                "Juan Perez",
-                "juan@test.com",
-                "+573001112233",
-                "Calle 1",
-                1L
+        "Juan Perez",
+        "juan@test.com",
+        "+573001112233",
+        "Calle 1",
+        1L,
+        "password123"
         );
 
         when(userRepository.findById(999L))
@@ -290,11 +295,12 @@ public class UserServiceTest {
         existingUser.setBarrio(barrio);
 
         UserSaveDTO dto = new UserSaveDTO(
-                "Juan",
-                "existente@test.com",
-                "+573001112233",
-                "Calle 1",
-                1L
+        "Juan",
+        "existente@test.com",
+        "+573001112233",
+        "Calle 1",
+        1L,
+        "password123"
         );
 
         when(userRepository.findById(10L))
@@ -328,11 +334,12 @@ public class UserServiceTest {
         existingUser.setBarrio(barrio);
 
         UserSaveDTO dto = new UserSaveDTO(
-                "Juan Actualizado",
-                "juan@test.com",
-                "+573001112233",
-                "Calle 2",
-                999L
+        "Juan Actualizado",
+        "juan@test.com",
+        "+573001112233",
+        "Calle 1",
+        999L,
+        "password123"
         );
 
         when(userRepository.findById(10L))
@@ -367,6 +374,7 @@ public class UserServiceTest {
 
         UserSaveDTO dto = new UserSaveDTO(
                 "Juan Actualizado",
+                null,
                 null,
                 null,
                 null,
@@ -408,6 +416,7 @@ public class UserServiceTest {
                 "existente@test.com",
                 null,
                 null,
+                null,
                 null
         );
 
@@ -434,6 +443,7 @@ public class UserServiceTest {
                 null,
                 null,
                 null,
+                null,
                 null
         );
 
@@ -447,6 +457,65 @@ public class UserServiceTest {
 
         verify(userRepository, never())
                 .save(any(User.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPasswordIsMissing() {
+
+        UserSaveDTO dto = new UserSaveDTO(
+                "Juan Perez",
+                "juan@test.com",
+                "+573001112233",
+                "Calle 1",
+                1L,
+                null
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> userService.save(dto)
+        );
+
+        verify(userRepository, never())
+                .save(any(User.class));
+    }
+
+    @Test
+    void shouldFindUserByEmailSuccessfully() {
+
+        Barrio barrio = new Barrio();
+        barrio.setId(1L);
+
+        User user = new User();
+        user.setId(10L);
+        user.setName("Juan");
+        user.setEmail("juan@test.com");
+        user.setPhone("+573001112233");
+        user.setAddress("Calle 1");
+        user.setBarrio(barrio);
+
+        when(userRepository.findByEmail("juan@test.com"))
+                .thenReturn(Optional.of(user));
+
+        UserResponseDTO result =
+                userService.findByEmail("juan@test.com");
+
+        assertEquals(10L, result.id());
+        assertEquals("Juan", result.name());
+        assertEquals("juan@test.com", result.email());
+        assertEquals(1L, result.barrioId());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEmailDoesNotExist() {
+
+        when(userRepository.findByEmail("inexistente@test.com"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> userService.findByEmail("inexistente@test.com")
+        );
     }
 
 }
