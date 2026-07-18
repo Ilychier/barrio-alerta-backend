@@ -10,4 +10,5 @@ import com.alertabarrio.ingsoft.models.entities.Alerta;
 
 public interface AlertaRepository extends JpaRepository<Alerta, Long> {
     Page<Alerta> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
+    Page<Alerta> findByUsuario_Barrio_IdAndFechaHoraBetween(Long barrioId, LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
 }

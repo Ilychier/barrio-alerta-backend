@@ -130,6 +130,14 @@ public class AlertaServicelmpl implements AlertaService {
             .map(this::mapToDTO);
     }
 
+    @Override
+    public Page<AlertaResponseDTO> findByBarrioAndFecha(Long barrioId, LocalDate fecha, Pageable pageable) {
+        LocalDateTime inicioDia = fecha.atStartOfDay(); 
+        LocalDateTime finDia = fecha.atTime(LocalTime.MAX); 
+        return alertaRepository.findByUsuario_Barrio_IdAndFechaHoraBetween(barrioId, inicioDia, finDia, pageable)
+            .map(this::mapToDTO);
+    }
+
     private AlertaResponseDTO mapToDTO(Alerta entity) {
         CategoriaResponseDTO categoriaDTO = null;
         if (entity.getCategoria() != null) {

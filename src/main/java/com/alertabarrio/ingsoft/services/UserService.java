@@ -18,5 +18,7 @@ public interface UserService {
     void delete(Long id);
 
     Page<UserResponseDTO> findAllPaginated(Pageable pageable);  
+
+    UserResponseDTO findByEmail(String email);
      
 }

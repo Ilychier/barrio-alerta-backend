@@ -68,9 +68,14 @@ public class AlertaController {
     public ResponseEntity<Page<AlertaResponseDTO>> findAllPaginated(
             @RequestParam(required = false) 
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) Long barrioId,
             @PageableDefault(sort = "fechaHora", direction = Sort.Direction.DESC) Pageable pageable) {
 
+        System.out.println(">>> [AlertaController] GET /api/alertas - fecha=" + fecha + ", barrioId=" + barrioId);
         LocalDate fechaFiltro = (fecha != null) ? fecha : LocalDate.now();
+        if (barrioId != null) {
+            return ResponseEntity.ok(alertaService.findByBarrioAndFecha(barrioId, fechaFiltro, pageable));
+        }
         return ResponseEntity.ok(alertaService.findByFecha(fechaFiltro, pageable));
     }
 }
