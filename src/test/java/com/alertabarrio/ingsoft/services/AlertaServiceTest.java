@@ -495,4 +495,16 @@ class AlertaServiceTest {
         assertEquals(1, result.getContent().size());
         assertEquals(10L, result.getContent().get(0).id());
     }
+
+    @Test
+    void shouldThrowExceptionWhenFindingNonExistingAlerta() {
+
+        when(alertaRepository.findById(999L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> alertaService.findById(999L)
+        );
+    }
 }
