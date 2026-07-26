@@ -1,4 +1,4 @@
-package com.alertabarrio.ingsoft;
+package com.alertabarrio;
 
 import java.util.TimeZone;
 
