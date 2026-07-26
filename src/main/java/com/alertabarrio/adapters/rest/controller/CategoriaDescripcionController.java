@@ -81,8 +81,11 @@ public class CategoriaDescripcionController {
     public ResponseEntity<Pagina<CategoriaDescripcionResponseDTO>> findAllPaginated(
             @RequestParam(required = false) Long categoriaId,
             @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-        Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(),
-                pageable.getSort().toString().isEmpty() ? null : pageable.getSort().toString(), null);
+        String orden = pageable.getSort().stream().findFirst()
+                .map(Sort.Order::getProperty).orElse(null);
+        String direccion = pageable.getSort().stream().findFirst()
+                .map(o -> o.getDirection().name().toLowerCase()).orElse(null);
+        Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(), orden, direccion);
         Pagina<CategoriaDescripcionDTO> result = listarCategoriaDescripcionesUseCase.execute(mapper.toListarQuery(categoriaId, paginacion));
         return ResponseEntity.ok(new Pagina<>(
                 result.contenido().stream().map(mapper::toResponse).toList(),

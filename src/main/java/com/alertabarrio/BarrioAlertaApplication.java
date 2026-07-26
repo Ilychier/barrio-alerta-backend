@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
-public class IngsoftApplication {
+public class BarrioAlertaApplication {
 
 	@PostConstruct
     public void init() {
@@ -16,7 +16,7 @@ public class IngsoftApplication {
     }
 
 	public static void main(String[] args) {
-		SpringApplication.run(IngsoftApplication.class, args);
+		SpringApplication.run(BarrioAlertaApplication.class, args);
 	}
 
 }

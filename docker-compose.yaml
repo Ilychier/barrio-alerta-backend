@@ -1,41 +1,50 @@
+# ============================================================
+# Docker Compose — Barrio Alerta Backend
+#
+# Uso en desarrollo (solo BD):
+#   docker compose up db -d
+#
+# Uso en produccion (BD + App):
+#   docker compose up -d
+#
+# Tirar todo:
+#   docker compose down
+# ============================================================
+
 services:
+  # Base de datos — se usa tanto en dev como en prod
   db:
     image: postgres:16-alpine
     container_name: alerta-barrio-db
-    networks:
-      - alerta-net
     environment:
-      - POSTGRES_DB=alerta_barrio
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234
+      POSTGRES_DB: alerta_barrio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d alerta_barrio"]
       interval: 5s
       timeout: 5s
       retries: 5
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
+  # Aplicacion — solo se levanta en produccion
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: alerta-barrio-app
-    networks:
-      - alerta-net
     ports:
-      - "8088:8080"
+      - "8080:8080"
     environment:
-      - SPRING_DOCKER_COMPOSE_ENABLED=false
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/alerta_barrio
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=1234
-
-networks:
-  alerta-net:
-    driver: bridge
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_USER=postgres
+      - DB_PASSWORD=1234
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:

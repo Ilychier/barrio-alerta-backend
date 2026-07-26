@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "BarrioAlertaApplication",
+      "request": "launch",
+      "mainClass": "com.alertabarrio.BarrioAlertaApplication",
+      "projectName": "ingsoft"
+    },
+    {
+      "type": "java",
+      "name": "Debug Barrio Alerta (Local)",
+      "request": "launch",
+      "mainClass": "com.alertabarrio.BarrioAlertaApplication",
+      "projectName": "barrio-alerta-backend",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "dev"
+      }
+    },
+    {
+      "type": "java",
+      "name": "Run Barrio Alerta (Local)",
+      "request": "launch",
+      "mainClass": "com.alertabarrio.BarrioAlertaApplication",
+      "projectName": "barrio-alerta-backend",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "dev"
+      }
+    }
+  ]
+}

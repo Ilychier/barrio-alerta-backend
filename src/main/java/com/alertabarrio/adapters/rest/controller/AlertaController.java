@@ -82,8 +82,11 @@ public class AlertaController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam(required = false) Long barrioId,
             @PageableDefault(sort = "fechaHora", direction = Sort.Direction.DESC) Pageable pageable) {
-        Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(),
-                pageable.getSort().toString().isEmpty() ? null : pageable.getSort().toString(), null);
+        String orden = pageable.getSort().stream().findFirst()
+                .map(Sort.Order::getProperty).orElse(null);
+        String direccion = pageable.getSort().stream().findFirst()
+                .map(o -> o.getDirection().name().toLowerCase()).orElse(null);
+        Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(), orden, direccion);
         Pagina<AlertaDTO> result = listarAlertasUseCase.execute(mapper.toListarQuery(paginacion, fecha, barrioId));
         return ResponseEntity.ok(new Pagina<>(
                 result.contenido().stream().map(mapper::toResponse).toList(),
