@@ -2,6 +2,9 @@ package com.alertabarrio.application.usecase;
 
 import com.alertabarrio.application.UseCase;
 import com.alertabarrio.application.command.LoginCommand;
+import com.alertabarrio.application.dto.AuthResultDTO;
+import com.alertabarrio.application.dto.UsuarioDTO;
+import com.alertabarrio.application.mapper.UsuarioDomainMapper;
 import com.alertabarrio.domain.exception.ResourceNotFoundException;
 import com.alertabarrio.domain.port.in.LoginUseCase;
 import com.alertabarrio.domain.port.out.PasswordEncoderPort;
@@ -14,15 +17,17 @@ public class LoginUseCaseImpl implements LoginUseCase {
     private final UsuarioRepositoryPort usuarioRepository;
     private final PasswordEncoderPort passwordEncoder;
     private final TokenServicePort tokenService;
+    private final UsuarioDomainMapper mapper;
 
-    public LoginUseCaseImpl(UsuarioRepositoryPort usuarioRepository, PasswordEncoderPort passwordEncoder, TokenServicePort tokenService) {
+    public LoginUseCaseImpl(UsuarioRepositoryPort usuarioRepository, PasswordEncoderPort passwordEncoder, TokenServicePort tokenService, UsuarioDomainMapper mapper) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
+        this.mapper = mapper;
     }
 
     @Override
-    public String execute(LoginCommand command) {
+    public AuthResultDTO execute(LoginCommand command) {
         var user = usuarioRepository.findByEmail(command.email())
                 .orElseThrow(() -> new ResourceNotFoundException("User", command.email()));
 
@@ -30,6 +35,8 @@ public class LoginUseCaseImpl implements LoginUseCase {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        return tokenService.generarToken(user.getEmail());
+        String token = tokenService.generarToken(user.getEmail());
+        UsuarioDTO userDto = mapper.toDto(user);
+        return new AuthResultDTO(token, userDto);
     }
 }

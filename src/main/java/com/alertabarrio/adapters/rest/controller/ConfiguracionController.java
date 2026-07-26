@@ -4,6 +4,7 @@ import com.alertabarrio.adapters.rest.dto.ConfiguracionRequestDTO;
 import com.alertabarrio.adapters.rest.dto.ConfiguracionResponseDTO;
 import com.alertabarrio.adapters.rest.mapper.ConfiguracionDtoMapper;
 import com.alertabarrio.application.dto.ConfiguracionDTO;
+import com.alertabarrio.application.query.ObtenerConfiguracionPorUsuarioQuery;
 import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.in.*;
@@ -21,6 +22,7 @@ public class ConfiguracionController {
 
     private final CrearConfiguracionUseCase crearConfiguracionUseCase;
     private final ObtenerConfiguracionUseCase obtenerConfiguracionUseCase;
+    private final ObtenerConfiguracionPorUsuarioUseCase obtenerConfiguracionPorUsuarioUseCase;
     private final ActualizarConfiguracionUseCase actualizarConfiguracionUseCase;
     private final EliminarConfiguracionUseCase eliminarConfiguracionUseCase;
     private final ListarConfiguracionesUseCase listarConfiguracionesUseCase;
@@ -29,12 +31,14 @@ public class ConfiguracionController {
     public ConfiguracionController(
             CrearConfiguracionUseCase crearConfiguracionUseCase,
             ObtenerConfiguracionUseCase obtenerConfiguracionUseCase,
+            ObtenerConfiguracionPorUsuarioUseCase obtenerConfiguracionPorUsuarioUseCase,
             ActualizarConfiguracionUseCase actualizarConfiguracionUseCase,
             EliminarConfiguracionUseCase eliminarConfiguracionUseCase,
             ListarConfiguracionesUseCase listarConfiguracionesUseCase,
             ConfiguracionDtoMapper mapper) {
         this.crearConfiguracionUseCase = crearConfiguracionUseCase;
         this.obtenerConfiguracionUseCase = obtenerConfiguracionUseCase;
+        this.obtenerConfiguracionPorUsuarioUseCase = obtenerConfiguracionPorUsuarioUseCase;
         this.actualizarConfiguracionUseCase = actualizarConfiguracionUseCase;
         this.eliminarConfiguracionUseCase = eliminarConfiguracionUseCase;
         this.listarConfiguracionesUseCase = listarConfiguracionesUseCase;
@@ -45,6 +49,12 @@ public class ConfiguracionController {
     public ResponseEntity<ConfiguracionResponseDTO> create(@Valid @RequestBody ConfiguracionRequestDTO dto) {
         ConfiguracionDTO result = crearConfiguracionUseCase.execute(mapper.toCrearCommand(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(result));
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<ConfiguracionResponseDTO> findByUsuarioId(@PathVariable Long usuarioId) {
+        ConfiguracionDTO result = obtenerConfiguracionPorUsuarioUseCase.execute(new ObtenerConfiguracionPorUsuarioQuery(usuarioId));
+        return ResponseEntity.ok(mapper.toResponse(result));
     }
 
     @GetMapping("/{id}")

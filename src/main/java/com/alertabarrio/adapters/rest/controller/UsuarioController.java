@@ -4,9 +4,11 @@ import com.alertabarrio.adapters.rest.dto.UsuarioRequestDTO;
 import com.alertabarrio.adapters.rest.dto.UsuarioResponseDTO;
 import com.alertabarrio.adapters.rest.mapper.UsuarioDtoMapper;
 import com.alertabarrio.application.dto.UsuarioDTO;
+import com.alertabarrio.application.query.BuscarUsuarioPorEmailQuery;
 import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.in.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,6 +27,7 @@ public class UsuarioController {
     private final EliminarUsuarioUseCase eliminarUsuarioUseCase;
     private final BuscarUsuarioUseCase buscarUsuarioUseCase;
     private final ListarUsuariosUseCase listarUsuariosUseCase;
+    private final BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmailUseCase;
     private final UsuarioDtoMapper mapper;
 
     public UsuarioController(
@@ -34,6 +37,7 @@ public class UsuarioController {
             EliminarUsuarioUseCase eliminarUsuarioUseCase,
             BuscarUsuarioUseCase buscarUsuarioUseCase,
             ListarUsuariosUseCase listarUsuariosUseCase,
+            BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmailUseCase,
             UsuarioDtoMapper mapper) {
         this.registrarUsuarioUseCase = registrarUsuarioUseCase;
         this.actualizarUsuarioUseCase = actualizarUsuarioUseCase;
@@ -41,6 +45,7 @@ public class UsuarioController {
         this.eliminarUsuarioUseCase = eliminarUsuarioUseCase;
         this.buscarUsuarioUseCase = buscarUsuarioUseCase;
         this.listarUsuariosUseCase = listarUsuariosUseCase;
+        this.buscarUsuarioPorEmailUseCase = buscarUsuarioPorEmailUseCase;
         this.mapper = mapper;
     }
 
@@ -48,6 +53,16 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> create(@Valid @RequestBody UsuarioRequestDTO dto) {
         UsuarioDTO result = registrarUsuarioUseCase.execute(mapper.toCrearCommand(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(result));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> findMe(HttpServletRequest request) {
+        String email = (String) request.getAttribute("currentUserEmail");
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        UsuarioDTO result = buscarUsuarioPorEmailUseCase.execute(new BuscarUsuarioPorEmailQuery(email));
+        return ResponseEntity.ok(mapper.toResponse(result));
     }
 
     @GetMapping("/{id}")
