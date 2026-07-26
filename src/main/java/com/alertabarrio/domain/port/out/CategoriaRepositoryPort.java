@@ -2,8 +2,8 @@ package com.alertabarrio.domain.port.out;
 
 import com.alertabarrio.domain.model.Categoria;
 import com.alertabarrio.domain.model.valueobject.CategoriaId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 
 import java.util.Optional;
 
@@ -19,5 +19,5 @@ public interface CategoriaRepositoryPort {
 
     boolean existsByNombre(String nombre);
 
-    Page<Categoria> findAll(Pageable pageable);
+    Pagina<Categoria> findAll(Paginacion paginacion);
 }

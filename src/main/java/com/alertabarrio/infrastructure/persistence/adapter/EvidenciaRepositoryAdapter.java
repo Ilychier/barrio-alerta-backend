@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.Evidencia;
 import com.alertabarrio.domain.model.valueobject.EvidenciaId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.out.EvidenciaRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.EvidenciaEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.EvidenciaEntityMapper;
@@ -50,14 +52,28 @@ public class EvidenciaRepositoryAdapter implements EvidenciaRepositoryPort {
     }
 
     @Override
-    public Page<Evidencia> findByAlertaId(Long alertaId, Pageable pageable) {
-        return jpaRepository.findByAlertaId(alertaId, pageable)
-                .map(mapper::toDomain);
+    public Pagina<Evidencia> findByAlertaId(Long alertaId, Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<EvidenciaEntity> page = jpaRepository.findByAlertaId(alertaId, pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
     @Override
-    public Page<Evidencia> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<Evidencia> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<EvidenciaEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

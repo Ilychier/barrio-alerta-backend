@@ -2,8 +2,8 @@ package com.alertabarrio.domain.port.in;
 
 import com.alertabarrio.application.query.ListarBarriosQuery;
 import com.alertabarrio.application.dto.BarrioDTO;
-import org.springframework.data.domain.Page;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 
 public interface ListarBarriosUseCase {
-    Page<BarrioDTO> execute(ListarBarriosQuery query);
+    Pagina<BarrioDTO> execute(ListarBarriosQuery query);
 }

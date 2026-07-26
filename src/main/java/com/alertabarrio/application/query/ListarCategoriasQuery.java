@@ -1,6 +1,6 @@
 package com.alertabarrio.application.query;
 
-import org.springframework.data.domain.Pageable;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 
-public record ListarCategoriasQuery(Pageable pageable) {
+public record ListarCategoriasQuery(Paginacion paginacion) {
 }

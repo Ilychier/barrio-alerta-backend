@@ -1,6 +1,6 @@
 package com.alertabarrio.application.query;
 
-import org.springframework.data.domain.Pageable;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 
-public record ListarEvidenciasQuery(Long alertaId, Pageable pageable) {
+public record ListarEvidenciasQuery(Long alertaId, Paginacion paginacion) {
 }

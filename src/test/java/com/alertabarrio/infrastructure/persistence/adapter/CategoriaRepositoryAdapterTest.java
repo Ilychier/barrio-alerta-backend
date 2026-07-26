@@ -10,8 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -113,8 +113,8 @@ class CategoriaRepositoryAdapterTest {
         jpaRepository.save(new CategoriaEntity("A", "icon-a.png"));
         jpaRepository.save(new CategoriaEntity("B", "icon-b.png"));
         jpaRepository.save(new CategoriaEntity("C", "icon-c.png"));
-        Page<Categoria> pagina = adapter.findAll(PageRequest.of(0, 2));
-        assertEquals(2, pagina.getNumberOfElements());
-        assertEquals(3, pagina.getTotalElements());
+        Pagina<Categoria> pagina = adapter.findAll(Paginacion.of(0, 2));
+        assertEquals(2, pagina.contenido().size());
+        assertEquals(3, pagina.totalElementos());
     }
 }

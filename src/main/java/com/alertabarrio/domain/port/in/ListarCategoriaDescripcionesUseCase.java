@@ -2,8 +2,8 @@ package com.alertabarrio.domain.port.in;
 
 import com.alertabarrio.application.dto.CategoriaDescripcionDTO;
 import com.alertabarrio.application.query.ListarCategoriaDescripcionesQuery;
-import org.springframework.data.domain.Page;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 
 public interface ListarCategoriaDescripcionesUseCase {
-    Page<CategoriaDescripcionDTO> execute(ListarCategoriaDescripcionesQuery query);
+    Pagina<CategoriaDescripcionDTO> execute(ListarCategoriaDescripcionesQuery query);
 }

@@ -6,9 +6,12 @@ import com.alertabarrio.application.command.*;
 import com.alertabarrio.application.dto.CategoriaDescripcionDTO;
 import com.alertabarrio.application.query.BuscarCategoriaDescripcionQuery;
 import com.alertabarrio.application.query.ListarCategoriaDescripcionesQuery;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 @Mapper(componentModel = "spring")
 public interface CategoriaDescripcionDtoMapper {
@@ -23,7 +26,7 @@ public interface CategoriaDescripcionDtoMapper {
 
     BuscarCategoriaDescripcionQuery toBuscarQuery(Long id);
 
-    ListarCategoriaDescripcionesQuery toListarQuery(Long categoriaId, org.springframework.data.domain.Pageable pageable);
+    ListarCategoriaDescripcionesQuery toListarQuery(Long categoriaId, Paginacion paginacion);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "descripcion", source = "descripcion")
@@ -31,7 +34,11 @@ public interface CategoriaDescripcionDtoMapper {
     @Mapping(target = "imagenUrl", source = "imagenUrl")
     CategoriaDescripcionResponseDTO toResponse(CategoriaDescripcionDTO dto);
 
-    default Page<CategoriaDescripcionResponseDTO> toResponsePage(Page<CategoriaDescripcionDTO> page) {
-        return page.map(this::toResponse);
+    default Page<CategoriaDescripcionResponseDTO> toResponsePage(Pagina<CategoriaDescripcionDTO> pagina) {
+        return new PageImpl<>(
+                pagina.contenido().stream().map(this::toResponse).toList(),
+                org.springframework.data.domain.PageRequest.of(pagina.pagina(), pagina.tamanio()),
+                pagina.totalElementos()
+        );
     }
 }

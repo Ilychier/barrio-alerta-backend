@@ -4,8 +4,8 @@ import com.alertabarrio.application.dto.CuadranteDTO;
 import com.alertabarrio.application.mapper.CuadranteDomainMapper;
 import com.alertabarrio.application.query.ListarCuadrantesQuery;
 import com.alertabarrio.domain.port.in.ListarCuadrantesUseCase;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.port.out.CuadranteRepositoryPort;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +22,14 @@ public class ListarCuadrantesUseCaseImpl implements ListarCuadrantesUseCase {
     }
 
     @Override
-    public Page<CuadranteDTO> execute(ListarCuadrantesQuery query) {
-        return cuadranteRepository.findAll(query.pageable())
-                .map(mapper::toDto);
+    public Pagina<CuadranteDTO> execute(ListarCuadrantesQuery query) {
+        Pagina<com.alertabarrio.domain.model.Cuadrante> cuadrantesPage = cuadranteRepository.findAll(query.paginacion());
+        return new Pagina<>(
+                cuadrantesPage.contenido().stream().map(mapper::toDto).toList(),
+                cuadrantesPage.pagina(),
+                cuadrantesPage.tamanio(),
+                cuadrantesPage.totalElementos(),
+                cuadrantesPage.totalPaginas()
+        );
     }
 }

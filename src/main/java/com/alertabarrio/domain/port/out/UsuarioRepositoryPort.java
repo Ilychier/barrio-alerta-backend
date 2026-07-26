@@ -2,8 +2,8 @@ package com.alertabarrio.domain.port.out;
 
 import com.alertabarrio.domain.model.User;
 import com.alertabarrio.domain.model.valueobject.UsuarioId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import java.util.Optional;
 
 public interface UsuarioRepositoryPort {
@@ -13,5 +13,5 @@ public interface UsuarioRepositoryPort {
     void deleteById(UsuarioId id);
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
-    Page<User> findAll(Pageable pageable);
+    Pagina<User> findAll(Paginacion paginacion);
 }

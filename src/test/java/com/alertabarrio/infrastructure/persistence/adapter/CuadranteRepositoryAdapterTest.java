@@ -10,8 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -113,8 +113,8 @@ class CuadranteRepositoryAdapterTest {
         jpaRepository.save(new CuadranteEntity("A", "+571111111111"));
         jpaRepository.save(new CuadranteEntity("B", "+572222222222"));
         jpaRepository.save(new CuadranteEntity("C", "+573333333333"));
-        Page<Cuadrante> pagina = adapter.findAll(PageRequest.of(0, 2));
-        assertEquals(2, pagina.getNumberOfElements());
-        assertEquals(3, pagina.getTotalElements());
+        Pagina<Cuadrante> pagina = adapter.findAll(Paginacion.of(0, 2));
+        assertEquals(2, pagina.contenido().size());
+        assertEquals(3, pagina.totalElementos());
     }
 }

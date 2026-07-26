@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.Alerta;
 import com.alertabarrio.domain.model.valueobject.AlertaId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.infrastructure.persistence.entity.*;
 import com.alertabarrio.infrastructure.persistence.mapper.AlertaEntityMapper;
 import com.alertabarrio.infrastructure.persistence.repository.*;
@@ -10,8 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,11 +128,11 @@ class AlertaRepositoryAdapterTest {
         jpaRepository.save(new AlertaEntity("A", true, LocalDateTime.of(2024, 6, 1, 0, 0), usuario, categoria));
         jpaRepository.save(new AlertaEntity("B", true, LocalDateTime.of(2024, 6, 15, 0, 0), usuario, categoria));
         jpaRepository.save(new AlertaEntity("C", true, LocalDateTime.of(2024, 7, 1, 0, 0), usuario, categoria));
-        Page<Alerta> pagina = adapter.findByFechaHoraBetween(
+        Pagina<Alerta> pagina = adapter.findByFechaHoraBetween(
                 LocalDateTime.of(2024, 6, 1, 0, 0),
                 LocalDateTime.of(2024, 6, 30, 23, 59),
-                PageRequest.of(0, 10));
-        assertEquals(2, pagina.getTotalElements());
+                Paginacion.of(0, 10));
+        assertEquals(2, pagina.totalElementos());
     }
 
     @Test
@@ -140,8 +140,8 @@ class AlertaRepositoryAdapterTest {
     void findAll_devuelvePagina() {
         jpaRepository.save(new AlertaEntity("A", true, LocalDateTime.now(), usuario, categoria));
         jpaRepository.save(new AlertaEntity("B", true, LocalDateTime.now(), usuario, categoria));
-        Page<Alerta> pagina = adapter.findAll(PageRequest.of(0, 1));
-        assertEquals(1, pagina.getNumberOfElements());
-        assertEquals(2, pagina.getTotalElements());
+        Pagina<Alerta> pagina = adapter.findAll(Paginacion.of(0, 1));
+        assertEquals(1, pagina.contenido().size());
+        assertEquals(2, pagina.totalElementos());
     }
 }

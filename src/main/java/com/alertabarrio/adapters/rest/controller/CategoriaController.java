@@ -4,9 +4,10 @@ import com.alertabarrio.adapters.rest.dto.CategoriaRequestDTO;
 import com.alertabarrio.adapters.rest.dto.CategoriaResponseDTO;
 import com.alertabarrio.adapters.rest.mapper.CategoriaDtoMapper;
 import com.alertabarrio.application.dto.CategoriaDTO;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.in.*;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -77,9 +78,13 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoriaResponseDTO>> findAllPaginated(
+    public ResponseEntity<Pagina<CategoriaResponseDTO>> findAllPaginated(
             @PageableDefault(sort = "nombre", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<CategoriaDTO> result = listarCategoriasUseCase.execute(mapper.toListarQuery(pageable));
-        return ResponseEntity.ok(mapper.toResponsePage(result));
+        Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(),
+                pageable.getSort().toString().isEmpty() ? null : pageable.getSort().toString(), null);
+        Pagina<CategoriaDTO> result = listarCategoriasUseCase.execute(mapper.toListarQuery(paginacion));
+        return ResponseEntity.ok(new Pagina<>(
+                result.contenido().stream().map(mapper::toResponse).toList(),
+                result.pagina(), result.tamanio(), result.totalElementos(), result.totalPaginas()));
     }
 }

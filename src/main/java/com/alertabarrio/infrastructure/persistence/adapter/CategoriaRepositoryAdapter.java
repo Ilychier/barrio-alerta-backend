@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.Categoria;
 import com.alertabarrio.domain.model.valueobject.CategoriaId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.out.CategoriaRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.CategoriaEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.CategoriaEntityMapper;
@@ -55,8 +57,15 @@ public class CategoriaRepositoryAdapter implements CategoriaRepositoryPort {
     }
 
     @Override
-    public Page<Categoria> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<Categoria> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<CategoriaEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

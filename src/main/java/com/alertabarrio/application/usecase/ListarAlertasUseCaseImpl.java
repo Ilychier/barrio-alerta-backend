@@ -4,8 +4,8 @@ import com.alertabarrio.application.dto.AlertaDTO;
 import com.alertabarrio.application.mapper.AlertaDomainMapper;
 import com.alertabarrio.application.query.ListarAlertasQuery;
 import com.alertabarrio.domain.port.in.ListarAlertasUseCase;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.port.out.AlertaRepositoryPort;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,23 +26,31 @@ public class ListarAlertasUseCaseImpl implements ListarAlertasUseCase {
     }
 
     @Override
-    public Page<AlertaDTO> execute(ListarAlertasQuery query) {
+    public Pagina<AlertaDTO> execute(ListarAlertasQuery query) {
         LocalDate fecha = query.fecha();
         Long barrioId = query.barrioId();
+
+        Pagina<com.alertabarrio.domain.model.Alerta> alertasPage;
 
         if (fecha != null) {
             LocalDateTime inicio = fecha.atStartOfDay();
             LocalDateTime fin = fecha.atTime(LocalTime.MAX);
 
             if (barrioId != null) {
-                return alertaRepository.findByUsuario_Barrio_IdAndFechaHoraBetween(barrioId, inicio, fin, query.pageable())
-                        .map(mapper::toDto);
+                alertasPage = alertaRepository.findByUsuario_Barrio_IdAndFechaHoraBetween(barrioId, inicio, fin, query.paginacion());
+            } else {
+                alertasPage = alertaRepository.findByFechaHoraBetween(inicio, fin, query.paginacion());
             }
-            return alertaRepository.findByFechaHoraBetween(inicio, fin, query.pageable())
-                    .map(mapper::toDto);
+        } else {
+            alertasPage = alertaRepository.findAll(query.paginacion());
         }
 
-        return alertaRepository.findAll(query.pageable())
-                .map(mapper::toDto);
+        return new Pagina<>(
+                alertasPage.contenido().stream().map(mapper::toDto).toList(),
+                alertasPage.pagina(),
+                alertasPage.tamanio(),
+                alertasPage.totalElementos(),
+                alertasPage.totalPaginas()
+        );
     }
 }

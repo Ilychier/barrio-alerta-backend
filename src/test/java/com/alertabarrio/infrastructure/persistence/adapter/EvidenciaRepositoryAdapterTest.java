@@ -10,8 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,8 +128,8 @@ class EvidenciaRepositoryAdapterTest {
     void findByAlertaId_filtra() {
         jpaRepository.save(new EvidenciaEntity("https://ejemplo.com/1.jpg", LocalDateTime.now(), alerta));
         jpaRepository.save(new EvidenciaEntity("https://ejemplo.com/2.jpg", LocalDateTime.now(), alerta));
-        Page<Evidencia> pagina = adapter.findByAlertaId(alerta.getId(), PageRequest.of(0, 10));
-        assertEquals(2, pagina.getTotalElements());
+        Pagina<Evidencia> pagina = adapter.findByAlertaId(alerta.getId(), Paginacion.of(0, 10));
+        assertEquals(2, pagina.totalElementos());
     }
 
     @Test
@@ -137,8 +137,8 @@ class EvidenciaRepositoryAdapterTest {
     void findAll_devuelvePagina() {
         jpaRepository.save(new EvidenciaEntity("https://ejemplo.com/1.jpg", LocalDateTime.now(), alerta));
         jpaRepository.save(new EvidenciaEntity("https://ejemplo.com/2.jpg", LocalDateTime.now(), alerta));
-        Page<Evidencia> pagina = adapter.findAll(PageRequest.of(0, 1));
-        assertEquals(1, pagina.getNumberOfElements());
-        assertEquals(2, pagina.getTotalElements());
+        Pagina<Evidencia> pagina = adapter.findAll(Paginacion.of(0, 1));
+        assertEquals(1, pagina.contenido().size());
+        assertEquals(2, pagina.totalElementos());
     }
 }

@@ -5,6 +5,8 @@ import com.alertabarrio.domain.model.valueobject.AlertaId;
 import com.alertabarrio.domain.port.out.AlertaRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.AlertaEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.AlertaEntityMapper;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.infrastructure.persistence.repository.AlertaJpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,20 +53,41 @@ public class AlertaRepositoryAdapter implements AlertaRepositoryPort {
     }
 
     @Override
-    public Page<Alerta> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<Alerta> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<AlertaEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
     @Override
-    public Page<Alerta> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin, Pageable pageable) {
-        return jpaRepository.findByFechaHoraBetween(inicio, fin, pageable)
-                .map(mapper::toDomain);
+    public Pagina<Alerta> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin, Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<AlertaEntity> page = jpaRepository.findByFechaHoraBetween(inicio, fin, pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
     @Override
-    public Page<Alerta> findByUsuario_Barrio_IdAndFechaHoraBetween(Long barrioId, LocalDateTime inicio, LocalDateTime fin, Pageable pageable) {
-        return jpaRepository.findByUsuario_Barrio_IdAndFechaHoraBetween(barrioId, inicio, fin, pageable)
-                .map(mapper::toDomain);
+    public Pagina<Alerta> findByUsuario_Barrio_IdAndFechaHoraBetween(Long barrioId, LocalDateTime inicio, LocalDateTime fin, Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<AlertaEntity> page = jpaRepository.findByUsuario_Barrio_IdAndFechaHoraBetween(barrioId, inicio, fin, pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

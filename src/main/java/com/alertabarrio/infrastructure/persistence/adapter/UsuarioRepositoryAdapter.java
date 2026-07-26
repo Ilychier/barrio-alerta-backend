@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.User;
 import com.alertabarrio.domain.model.valueobject.UsuarioId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.out.UsuarioRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.UserEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.UserEntityMapper;
@@ -61,8 +63,15 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<User> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<UserEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

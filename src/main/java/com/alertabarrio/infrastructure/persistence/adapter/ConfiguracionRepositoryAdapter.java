@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.Configuracion;
 import com.alertabarrio.domain.model.valueobject.ConfiguracionId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.out.ConfiguracionRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.ConfiguracionEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.ConfiguracionEntityMapper;
@@ -56,8 +58,15 @@ public class ConfiguracionRepositoryAdapter implements ConfiguracionRepositoryPo
     }
 
     @Override
-    public Page<Configuracion> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<Configuracion> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<ConfiguracionEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

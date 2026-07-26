@@ -1,21 +1,19 @@
 package com.alertabarrio.domain.exception;
 
-import org.springframework.http.HttpStatus;
-
 /**
  * Base exception for all domain errors.
  * Extends RuntimeException so that @Transactional in use cases performs rollback automatically.
  */
 public abstract class DomainException extends RuntimeException {
 
-    private final HttpStatus status;
+    private final CodigoError codigo;
 
-    protected DomainException(String message, HttpStatus status) {
+    protected DomainException(String message, CodigoError codigo) {
         super(message);
-        this.status = status;
+        this.codigo = codigo;
     }
 
-    public HttpStatus getStatus() {
-        return status;
+    public CodigoError getCodigo() {
+        return codigo;
     }
 }

@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.Barrio;
 import com.alertabarrio.domain.model.valueobject.BarrioId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.out.BarrioRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.BarrioEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.BarrioEntityMapper;
@@ -55,8 +57,15 @@ public class BarrioRepositoryAdapter implements BarrioRepositoryPort {
     }
 
     @Override
-    public Page<Barrio> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<Barrio> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<BarrioEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

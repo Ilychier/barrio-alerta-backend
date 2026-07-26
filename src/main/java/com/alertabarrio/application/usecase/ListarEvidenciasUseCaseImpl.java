@@ -4,8 +4,8 @@ import com.alertabarrio.application.dto.EvidenciaDTO;
 import com.alertabarrio.application.mapper.EvidenciaDomainMapper;
 import com.alertabarrio.application.query.ListarEvidenciasQuery;
 import com.alertabarrio.domain.port.in.ListarEvidenciasUseCase;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.port.out.EvidenciaRepositoryPort;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +22,19 @@ public class ListarEvidenciasUseCaseImpl implements ListarEvidenciasUseCase {
     }
 
     @Override
-    public Page<EvidenciaDTO> execute(ListarEvidenciasQuery query) {
+    public Pagina<EvidenciaDTO> execute(ListarEvidenciasQuery query) {
+        Pagina<com.alertabarrio.domain.model.Evidencia> evidenciasPage;
         if (query.alertaId() != null) {
-            return evidenciaRepository.findByAlertaId(query.alertaId(), query.pageable())
-                    .map(mapper::toDto);
+            evidenciasPage = evidenciaRepository.findByAlertaId(query.alertaId(), query.paginacion());
+        } else {
+            evidenciasPage = evidenciaRepository.findAll(query.paginacion());
         }
-        return evidenciaRepository.findAll(query.pageable())
-                .map(mapper::toDto);
+        return new Pagina<>(
+                evidenciasPage.contenido().stream().map(mapper::toDto).toList(),
+                evidenciasPage.pagina(),
+                evidenciasPage.tamanio(),
+                evidenciasPage.totalElementos(),
+                evidenciasPage.totalPaginas()
+        );
     }
 }

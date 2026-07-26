@@ -4,8 +4,8 @@ import com.alertabarrio.application.dto.CategoriaDescripcionDTO;
 import com.alertabarrio.application.mapper.CategoriaDescripcionDomainMapper;
 import com.alertabarrio.application.query.ListarCategoriaDescripcionesQuery;
 import com.alertabarrio.domain.port.in.ListarCategoriaDescripcionesUseCase;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.port.out.CategoriaDescripcionRepositoryPort;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +22,19 @@ public class ListarCategoriaDescripcionesUseCaseImpl implements ListarCategoriaD
     }
 
     @Override
-    public Page<CategoriaDescripcionDTO> execute(ListarCategoriaDescripcionesQuery query) {
+    public Pagina<CategoriaDescripcionDTO> execute(ListarCategoriaDescripcionesQuery query) {
+        Pagina<com.alertabarrio.domain.model.CategoriaDescripcion> descsPage;
         if (query.categoriaId() != null) {
-            return repository.findByCategoriaId(query.categoriaId(), query.pageable())
-                    .map(mapper::toDto);
+            descsPage = repository.findByCategoriaId(query.categoriaId(), query.paginacion());
+        } else {
+            descsPage = repository.findAll(query.paginacion());
         }
-        return repository.findAll(query.pageable())
-                .map(mapper::toDto);
+        return new Pagina<>(
+                descsPage.contenido().stream().map(mapper::toDto).toList(),
+                descsPage.pagina(),
+                descsPage.tamanio(),
+                descsPage.totalElementos(),
+                descsPage.totalPaginas()
+        );
     }
 }

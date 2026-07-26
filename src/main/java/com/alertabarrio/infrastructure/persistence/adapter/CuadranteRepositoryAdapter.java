@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.Cuadrante;
 import com.alertabarrio.domain.model.valueobject.CuadranteId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.out.CuadranteRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.CuadranteEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.CuadranteEntityMapper;
@@ -55,8 +57,15 @@ public class CuadranteRepositoryAdapter implements CuadranteRepositoryPort {
     }
 
     @Override
-    public Page<Cuadrante> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<Cuadrante> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<CuadranteEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

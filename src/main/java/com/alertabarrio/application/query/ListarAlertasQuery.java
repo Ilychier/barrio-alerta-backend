@@ -1,7 +1,7 @@
 package com.alertabarrio.application.query;
 
-import org.springframework.data.domain.Pageable;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import java.time.LocalDate;
 
-public record ListarAlertasQuery(Pageable pageable, LocalDate fecha, Long barrioId) {
+public record ListarAlertasQuery(Paginacion paginacion, LocalDate fecha, Long barrioId) {
 }

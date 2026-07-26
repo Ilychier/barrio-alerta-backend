@@ -4,8 +4,8 @@ import com.alertabarrio.application.dto.CategoriaDTO;
 import com.alertabarrio.application.mapper.CategoriaDomainMapper;
 import com.alertabarrio.application.query.ListarCategoriasQuery;
 import com.alertabarrio.domain.port.in.ListarCategoriasUseCase;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.port.out.CategoriaRepositoryPort;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +22,14 @@ public class ListarCategoriasUseCaseImpl implements ListarCategoriasUseCase {
     }
 
     @Override
-    public Page<CategoriaDTO> execute(ListarCategoriasQuery query) {
-        return categoriaRepository.findAll(query.pageable())
-                .map(mapper::toDto);
+    public Pagina<CategoriaDTO> execute(ListarCategoriasQuery query) {
+        Pagina<com.alertabarrio.domain.model.Categoria> categoriasPage = categoriaRepository.findAll(query.paginacion());
+        return new Pagina<>(
+                categoriasPage.contenido().stream().map(mapper::toDto).toList(),
+                categoriasPage.pagina(),
+                categoriasPage.tamanio(),
+                categoriasPage.totalElementos(),
+                categoriasPage.totalPaginas()
+        );
     }
 }

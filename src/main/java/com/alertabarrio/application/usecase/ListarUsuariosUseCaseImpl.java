@@ -4,8 +4,8 @@ import com.alertabarrio.application.dto.UsuarioDTO;
 import com.alertabarrio.application.mapper.UsuarioDomainMapper;
 import com.alertabarrio.application.query.ListarUsuariosQuery;
 import com.alertabarrio.domain.port.in.ListarUsuariosUseCase;
+import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.port.out.UsuarioRepositoryPort;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +22,14 @@ public class ListarUsuariosUseCaseImpl implements ListarUsuariosUseCase {
     }
 
     @Override
-    public Page<UsuarioDTO> execute(ListarUsuariosQuery query) {
-        return usuarioRepository.findAll(query.pageable())
-                .map(mapper::toDto);
+    public Pagina<UsuarioDTO> execute(ListarUsuariosQuery query) {
+        Pagina<com.alertabarrio.domain.model.User> usuariosPage = usuarioRepository.findAll(query.paginacion());
+        return new Pagina<>(
+                usuariosPage.contenido().stream().map(mapper::toDto).toList(),
+                usuariosPage.pagina(),
+                usuariosPage.tamanio(),
+                usuariosPage.totalElementos(),
+                usuariosPage.totalPaginas()
+        );
     }
 }

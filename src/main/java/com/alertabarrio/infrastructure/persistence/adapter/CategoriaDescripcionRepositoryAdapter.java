@@ -2,6 +2,8 @@ package com.alertabarrio.infrastructure.persistence.adapter;
 
 import com.alertabarrio.domain.model.CategoriaDescripcion;
 import com.alertabarrio.domain.model.valueobject.CategoriaDescripcionId;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.out.CategoriaDescripcionRepositoryPort;
 import com.alertabarrio.infrastructure.persistence.entity.CategoriaDescripcionEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.CategoriaDescripcionEntityMapper;
@@ -50,14 +52,28 @@ public class CategoriaDescripcionRepositoryAdapter implements CategoriaDescripci
     }
 
     @Override
-    public Page<CategoriaDescripcion> findByCategoriaId(Long categoriaId, Pageable pageable) {
-        return jpaRepository.findByCategoriaId(categoriaId, pageable)
-                .map(mapper::toDomain);
+    public Pagina<CategoriaDescripcion> findByCategoriaId(Long categoriaId, Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<CategoriaDescripcionEntity> page = jpaRepository.findByCategoriaId(categoriaId, pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
     @Override
-    public Page<CategoriaDescripcion> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-                .map(mapper::toDomain);
+    public Pagina<CategoriaDescripcion> findAll(Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<CategoriaDescripcionEntity> page = jpaRepository.findAll(pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

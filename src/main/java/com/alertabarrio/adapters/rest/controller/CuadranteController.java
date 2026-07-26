@@ -4,9 +4,10 @@ import com.alertabarrio.adapters.rest.dto.CuadranteRequestDTO;
 import com.alertabarrio.adapters.rest.dto.CuadranteResponseDTO;
 import com.alertabarrio.adapters.rest.mapper.CuadranteDtoMapper;
 import com.alertabarrio.application.dto.CuadranteDTO;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.in.*;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -77,9 +78,13 @@ public class CuadranteController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CuadranteResponseDTO>> findAllPaginated(
+    public ResponseEntity<Pagina<CuadranteResponseDTO>> findAllPaginated(
             @PageableDefault(sort = "nombreUnidad", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<CuadranteDTO> result = listarCuadrantesUseCase.execute(mapper.toListarQuery(pageable));
-        return ResponseEntity.ok(mapper.toResponsePage(result));
+        Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(),
+                pageable.getSort().toString().isEmpty() ? null : pageable.getSort().toString(), null);
+        Pagina<CuadranteDTO> result = listarCuadrantesUseCase.execute(mapper.toListarQuery(paginacion));
+        return ResponseEntity.ok(new Pagina<>(
+                result.contenido().stream().map(mapper::toResponse).toList(),
+                result.pagina(), result.tamanio(), result.totalElementos(), result.totalPaginas()));
     }
 }

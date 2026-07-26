@@ -2,8 +2,8 @@ package com.alertabarrio.domain.port.out;
 
 import com.alertabarrio.domain.model.Cuadrante;
 import com.alertabarrio.domain.model.valueobject.CuadranteId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.alertabarrio.domain.model.valueobject.Pagina;
+import com.alertabarrio.domain.model.valueobject.Paginacion;
 
 import java.util.Optional;
 
@@ -19,5 +19,5 @@ public interface CuadranteRepositoryPort {
 
     boolean existsByTelefonoEmergencia(String telefonoEmergencia);
 
-    Page<Cuadrante> findAll(Pageable pageable);
+    Pagina<Cuadrante> findAll(Paginacion paginacion);
 }
