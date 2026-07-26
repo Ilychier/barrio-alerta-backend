@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+/.cursor
+/.codegraph
+
+### Local config (secrets) ###
+application-local.properties
+src/main/resources/application.properties
