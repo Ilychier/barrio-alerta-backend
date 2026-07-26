@@ -1,6 +1,5 @@
 package com.alertabarrio.adapters.rest.exception;
 
-import com.alertabarrio.domain.exception.CodigoError;
 import com.alertabarrio.domain.exception.DomainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

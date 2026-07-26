@@ -4,9 +4,7 @@ import com.alertabarrio.application.UseCase;
 import com.alertabarrio.application.command.ActualizarCategoriaCommand;
 import com.alertabarrio.application.dto.CategoriaDTO;
 import com.alertabarrio.application.mapper.CategoriaDomainMapper;
-import com.alertabarrio.domain.exception.ResourceNotFoundException;
 import com.alertabarrio.domain.model.Categoria;
-import com.alertabarrio.domain.model.valueobject.CategoriaId;
 import com.alertabarrio.domain.port.in.ActualizarCategoriaUseCase;
 import com.alertabarrio.domain.port.out.CategoriaRepositoryPort;
 
@@ -23,10 +21,6 @@ public class ActualizarCategoriaUseCaseImpl implements ActualizarCategoriaUseCas
 
     @Override
     public CategoriaDTO execute(ActualizarCategoriaCommand command) {
-        CategoriaId id = new CategoriaId(command.id());
-        Categoria existente = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria", command.id()));
-
         // Reconstruir con nuevos valores (simula update)
         Categoria actualizada = Categoria.reconstruir(command.id(), command.nombre(), command.iconoReferencia());
         Categoria saved = categoriaRepository.save(actualizada);

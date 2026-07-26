@@ -1,7 +1,6 @@
 package com.alertabarrio.infrastructure.persistence.mapper;
 
 import com.alertabarrio.domain.model.Categoria;
-import com.alertabarrio.domain.model.valueobject.CategoriaId;
 import com.alertabarrio.infrastructure.persistence.entity.CategoriaEntity;
 import org.mapstruct.Mapper;
 
