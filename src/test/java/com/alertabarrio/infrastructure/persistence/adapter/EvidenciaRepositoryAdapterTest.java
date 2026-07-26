@@ -70,7 +70,7 @@ class EvidenciaRepositoryAdapterTest {
     void setUp() {
         EvidenciaEntityMapper mapper = new EvidenciaEntityMapper() {};
         adapter = new EvidenciaRepositoryAdapter(jpaRepository, mapper);
-        CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567"));
+        CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
         BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante));
         UserEntity usuario = userJpaRepository.save(new UserEntity("Juan", "juan@test.com", "+573001111111", "Calle 1", "pass123", barrio));
         CategoriaEntity categoria = categoriaJpaRepository.save(new CategoriaEntity("Robo", "icon-robbery.png"));

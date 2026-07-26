@@ -27,7 +27,7 @@ public class ActualizarCuadranteUseCaseImpl implements ActualizarCuadranteUseCas
         cuadranteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cuadrante", command.id()));
 
-        Cuadrante actualizada = Cuadrante.reconstruir(command.id(), command.nombreUnidad(), command.telefonoEmergencia());
+        Cuadrante actualizada = Cuadrante.reconstruir(command.id(), command.nombreUnidad(), command.telefonoEmergencia(), command.emailEmergencia());
         Cuadrante saved = cuadranteRepository.save(actualizada);
         return mapper.toDto(saved);
     }

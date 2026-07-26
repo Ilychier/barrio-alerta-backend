@@ -12,6 +12,7 @@ public interface CuadranteEntityMapper {
         CuadranteEntity entity = new CuadranteEntity();
         entity.setNombreUnidad(dominio.getNombreUnidad());
         entity.setTelefonoEmergencia(dominio.getTelefonoEmergencia());
+        entity.setEmailEmergencia(dominio.getEmailEmergencia());
         if (dominio.getId() != null) {
             entity.setId(dominio.getId().value());
         }
@@ -20,6 +21,6 @@ public interface CuadranteEntityMapper {
 
     default Cuadrante toDomain(CuadranteEntity entity) {
         if (entity == null) return null;
-        return Cuadrante.reconstruir(entity.getId(), entity.getNombreUnidad(), entity.getTelefonoEmergencia());
+        return Cuadrante.reconstruir(entity.getId(), entity.getNombreUnidad(), entity.getTelefonoEmergencia(), entity.getEmailEmergencia());
     }
 }

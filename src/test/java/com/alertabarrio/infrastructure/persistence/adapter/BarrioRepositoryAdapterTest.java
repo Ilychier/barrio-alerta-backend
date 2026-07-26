@@ -53,7 +53,7 @@ class BarrioRepositoryAdapterTest {
     void setUp() {
         BarrioEntityMapper mapper = new BarrioEntityMapper() {};
         adapter = new BarrioRepositoryAdapter(jpaRepository, mapper);
-        cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567"));
+        cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
     }
 
     @Test

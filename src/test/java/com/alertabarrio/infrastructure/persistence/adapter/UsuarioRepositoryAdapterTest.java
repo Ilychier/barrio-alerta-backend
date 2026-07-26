@@ -58,7 +58,7 @@ class UsuarioRepositoryAdapterTest {
     void setUp() {
         UserEntityMapper mapper = new UserEntityMapper() {};
         adapter = new UsuarioRepositoryAdapter(jpaRepository, mapper);
-        CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567"));
+        CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
         barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante));
     }
 

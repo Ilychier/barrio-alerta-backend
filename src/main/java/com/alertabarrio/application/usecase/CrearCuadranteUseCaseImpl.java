@@ -21,7 +21,7 @@ public class CrearCuadranteUseCaseImpl implements CrearCuadranteUseCase {
 
     @Override
     public CuadranteDTO execute(CrearCuadranteCommand command) {
-        Cuadrante cuadrante = Cuadrante.crear(command.nombreUnidad(), command.telefonoEmergencia());
+        Cuadrante cuadrante = Cuadrante.crear(command.nombreUnidad(), command.telefonoEmergencia(), command.emailEmergencia());
         Cuadrante saved = cuadranteRepository.save(cuadrante);
         return mapper.toDto(saved);
     }

@@ -17,25 +17,26 @@ class CuadranteTest {
         @Test
         @DisplayName("con datos válidos retorna Cuadrante sin id")
         void conDatosValidos_retornaCuadrante() {
-            Cuadrante cuadrante = Cuadrante.crear("Bomberos", "+573001234567");
+            Cuadrante cuadrante = Cuadrante.crear("Bomberos", "+573001234567", "bomberos@test.com");
 
             assertNull(cuadrante.getId());
             assertEquals("Bomberos", cuadrante.getNombreUnidad());
             assertEquals("+573001234567", cuadrante.getTelefonoEmergencia());
+            assertEquals("bomberos@test.com", cuadrante.getEmailEmergencia());
         }
 
         @Test
         @DisplayName("con nombre nulo lanza CuadranteInvalidaException")
         void conNombreNulo_lanzaExcepcion() {
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.crear(null, "+573001234567"));
+                    () -> Cuadrante.crear(null, "+573001234567", "bomberos@test.com"));
         }
 
         @Test
         @DisplayName("con nombre vacío lanza CuadranteInvalidaException")
         void conNombreVacio_lanzaExcepcion() {
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.crear("   ", "+573001234567"));
+                    () -> Cuadrante.crear("   ", "+573001234567", "bomberos@test.com"));
         }
 
         @Test
@@ -43,21 +44,21 @@ class CuadranteTest {
         void conNombreExcede100Chars_lanzaExcepcion() {
             String nombreLargo = "a".repeat(101);
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.crear(nombreLargo, "+573001234567"));
+                    () -> Cuadrante.crear(nombreLargo, "+573001234567", "bomberos@test.com"));
         }
 
         @Test
         @DisplayName("con teléfono nulo lanza CuadranteInvalidaException")
         void conTelefonoNulo_lanzaExcepcion() {
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.crear("Bomberos", null));
+                    () -> Cuadrante.crear("Bomberos", null, "bomberos@test.com"));
         }
 
         @Test
         @DisplayName("con teléfono vacío lanza CuadranteInvalidaException")
         void conTelefonoVacio_lanzaExcepcion() {
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.crear("Bomberos", "   "));
+                    () -> Cuadrante.crear("Bomberos", "   ", "bomberos@test.com"));
         }
 
         @Test
@@ -65,13 +66,13 @@ class CuadranteTest {
         void conTelefonoExcede100Chars_lanzaExcepcion() {
             String telefonoLargo = "5".repeat(101);
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.crear("Bomberos", telefonoLargo));
+                    () -> Cuadrante.crear("Bomberos", telefonoLargo, "bomberos@test.com"));
         }
 
         @Test
         @DisplayName("recorta espacios en blanco al inicio y final")
         void recortaEspacios() {
-            Cuadrante cuadrante = Cuadrante.crear("  Bomberos  ", "  +573001234567  ");
+            Cuadrante cuadrante = Cuadrante.crear("  Bomberos  ", "  +573001234567  ", "bomberos@test.com");
             assertEquals("Bomberos", cuadrante.getNombreUnidad());
             assertEquals("+573001234567", cuadrante.getTelefonoEmergencia());
         }
@@ -84,26 +85,27 @@ class CuadranteTest {
         @Test
         @DisplayName("con datos válidos retorna Cuadrante con id")
         void conDatosValidos_retornaCuadranteConId() {
-            Cuadrante cuadrante = Cuadrante.reconstruir(1L, "Bomberos", "+573001234567");
+            Cuadrante cuadrante = Cuadrante.reconstruir(1L, "Bomberos", "+573001234567", "bomberos@test.com");
 
             assertNotNull(cuadrante.getId());
             assertEquals(1L, cuadrante.getId().value());
             assertEquals("Bomberos", cuadrante.getNombreUnidad());
             assertEquals("+573001234567", cuadrante.getTelefonoEmergencia());
+            assertEquals("bomberos@test.com", cuadrante.getEmailEmergencia());
         }
 
         @Test
         @DisplayName("con nombre nulo lanza CuadranteInvalidaException")
         void conNombreNulo_lanzaExcepcion() {
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.reconstruir(1L, null, "+573001234567"));
+                    () -> Cuadrante.reconstruir(1L, null, "+573001234567", "bomberos@test.com"));
         }
 
         @Test
         @DisplayName("con teléfono nulo lanza CuadranteInvalidaException")
         void conTelefonoNulo_lanzaExcepcion() {
             assertThrows(CuadranteInvalidaException.class,
-                    () -> Cuadrante.reconstruir(1L, "Bomberos", null));
+                    () -> Cuadrante.reconstruir(1L, "Bomberos", null, "bomberos@test.com"));
         }
     }
 }

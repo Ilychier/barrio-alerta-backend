@@ -12,29 +12,31 @@ public final class Cuadrante {
     private final CuadranteId id;
     private final String nombreUnidad;
     private final String telefonoEmergencia;
+    private final String emailEmergencia;
 
-    private Cuadrante(CuadranteId id, String nombreUnidad, String telefonoEmergencia) {
+    private Cuadrante(CuadranteId id, String nombreUnidad, String telefonoEmergencia, String emailEmergencia) {
         this.id = id;
         this.nombreUnidad = nombreUnidad;
         this.telefonoEmergencia = telefonoEmergencia;
+        this.emailEmergencia = emailEmergencia;
     }
 
     /**
      * Factory method to create a new Cuadrante (before persistence).
      */
-    public static Cuadrante crear(String nombreUnidad, String telefonoEmergencia) {
+    public static Cuadrante crear(String nombreUnidad, String telefonoEmergencia, String emailEmergencia) {
         validarNombreUnidad(nombreUnidad);
         validarTelefonoEmergencia(telefonoEmergencia);
-        return new Cuadrante(null, nombreUnidad.trim(), telefonoEmergencia.trim());
+        return new Cuadrante(null, nombreUnidad.trim(), telefonoEmergencia.trim(), emailEmergencia);
     }
 
     /**
      * Factory method to reconstruct an existing Cuadrante (from persistence).
      */
-    public static Cuadrante reconstruir(Long id, String nombreUnidad, String telefonoEmergencia) {
+    public static Cuadrante reconstruir(Long id, String nombreUnidad, String telefonoEmergencia, String emailEmergencia) {
         validarNombreUnidad(nombreUnidad);
         validarTelefonoEmergencia(telefonoEmergencia);
-        return new Cuadrante(new CuadranteId(id), nombreUnidad.trim(), telefonoEmergencia.trim());
+        return new Cuadrante(new CuadranteId(id), nombreUnidad.trim(), telefonoEmergencia.trim(), emailEmergencia);
     }
 
     private static void validarNombreUnidad(String nombreUnidad) {
@@ -65,5 +67,9 @@ public final class Cuadrante {
 
     public String getTelefonoEmergencia() {
         return telefonoEmergencia;
+    }
+
+    public String getEmailEmergencia() {
+        return emailEmergencia;
     }
 }

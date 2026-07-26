@@ -68,7 +68,7 @@ class AlertaRepositoryAdapterTest {
     void setUp() {
         AlertaEntityMapper mapper = new AlertaEntityMapper() {};
         adapter = new AlertaRepositoryAdapter(jpaRepository, mapper);
-        CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567"));
+        CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
         BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante));
         usuario = userJpaRepository.save(new UserEntity("Juan", "juan@test.com", "+573001111111", "Calle 1", "pass123", barrio));
         categoria = categoriaJpaRepository.save(new CategoriaEntity("Robo", "icon-robbery.png"));
