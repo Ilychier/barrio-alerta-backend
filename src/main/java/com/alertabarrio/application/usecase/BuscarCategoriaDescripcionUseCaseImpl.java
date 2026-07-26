@@ -6,8 +6,12 @@ import com.alertabarrio.application.query.BuscarCategoriaDescripcionQuery;
 import com.alertabarrio.domain.model.valueobject.CategoriaDescripcionId;
 import com.alertabarrio.domain.port.in.BuscarCategoriaDescripcionUseCase;
 import com.alertabarrio.domain.port.out.CategoriaDescripcionRepositoryPort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
+@Service
+@Transactional(readOnly = true)
 public class BuscarCategoriaDescripcionUseCaseImpl implements BuscarCategoriaDescripcionUseCase {
 
     private final CategoriaDescripcionRepositoryPort repository;

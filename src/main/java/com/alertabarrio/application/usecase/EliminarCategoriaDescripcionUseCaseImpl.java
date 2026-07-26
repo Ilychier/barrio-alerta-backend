@@ -1,11 +1,13 @@
 package com.alertabarrio.application.usecase;
 
+import com.alertabarrio.application.UseCase;
 import com.alertabarrio.application.command.EliminarCategoriaDescripcionCommand;
 import com.alertabarrio.domain.exception.ResourceNotFoundException;
 import com.alertabarrio.domain.model.valueobject.CategoriaDescripcionId;
 import com.alertabarrio.domain.port.in.EliminarCategoriaDescripcionUseCase;
 import com.alertabarrio.domain.port.out.CategoriaDescripcionRepositoryPort;
 
+@UseCase
 public class EliminarCategoriaDescripcionUseCaseImpl implements EliminarCategoriaDescripcionUseCase {
 
     private final CategoriaDescripcionRepositoryPort repository;

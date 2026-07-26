@@ -1,5 +1,6 @@
 package com.alertabarrio.application.usecase;
 
+import com.alertabarrio.application.UseCase;
 import com.alertabarrio.application.command.ParchearCategoriaDescripcionCommand;
 import com.alertabarrio.application.dto.CategoriaDescripcionDTO;
 import com.alertabarrio.application.mapper.CategoriaDescripcionDomainMapper;
@@ -9,6 +10,7 @@ import com.alertabarrio.domain.model.valueobject.CategoriaDescripcionId;
 import com.alertabarrio.domain.port.in.ParchearCategoriaDescripcionUseCase;
 import com.alertabarrio.domain.port.out.CategoriaDescripcionRepositoryPort;
 
+@UseCase
 public class ParchearCategoriaDescripcionUseCaseImpl implements ParchearCategoriaDescripcionUseCase {
 
     private final CategoriaDescripcionRepositoryPort repository;

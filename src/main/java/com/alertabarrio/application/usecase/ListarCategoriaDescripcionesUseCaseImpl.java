@@ -6,7 +6,11 @@ import com.alertabarrio.application.query.ListarCategoriaDescripcionesQuery;
 import com.alertabarrio.domain.port.in.ListarCategoriaDescripcionesUseCase;
 import com.alertabarrio.domain.port.out.CategoriaDescripcionRepositoryPort;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service
+@Transactional(readOnly = true)
 public class ListarCategoriaDescripcionesUseCaseImpl implements ListarCategoriaDescripcionesUseCase {
 
     private final CategoriaDescripcionRepositoryPort repository;
