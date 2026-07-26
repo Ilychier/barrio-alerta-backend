@@ -63,6 +63,13 @@ public class ConfiguracionController {
         return ResponseEntity.ok(mapper.toResponse(result));
     }
 
+    @PutMapping("/usuario/{usuarioId}")
+    public ResponseEntity<ConfiguracionResponseDTO> updateByUsuarioId(@PathVariable Long usuarioId, @Valid @RequestBody ConfiguracionRequestDTO dto) {
+        var config = obtenerConfiguracionPorUsuarioUseCase.execute(new ObtenerConfiguracionPorUsuarioQuery(usuarioId));
+        ConfiguracionDTO result = actualizarConfiguracionUseCase.execute(mapper.toActualizarCommand(config.id(), dto));
+        return ResponseEntity.ok(mapper.toResponse(result));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ConfiguracionResponseDTO> update(@PathVariable Long id, @Valid @RequestBody ConfiguracionRequestDTO dto) {
         ConfiguracionDTO result = actualizarConfiguracionUseCase.execute(mapper.toActualizarCommand(id, dto));
