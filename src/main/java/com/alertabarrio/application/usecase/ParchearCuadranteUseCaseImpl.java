@@ -29,8 +29,9 @@ public class ParchearCuadranteUseCaseImpl implements ParchearCuadranteUseCase {
 
         String nombreUnidad = command.nombreUnidad() != null ? command.nombreUnidad() : existente.getNombreUnidad();
         String telefonoEmergencia = command.telefonoEmergencia() != null ? command.telefonoEmergencia() : existente.getTelefonoEmergencia();
+        String emailEmergencia = command.emailEmergencia() != null ? command.emailEmergencia() : existente.getEmailEmergencia();
 
-        Cuadrante parcheada = Cuadrante.reconstruir(command.id(), nombreUnidad, telefonoEmergencia);
+        Cuadrante parcheada = Cuadrante.reconstruir(command.id(), nombreUnidad, telefonoEmergencia, emailEmergencia);
         Cuadrante saved = cuadranteRepository.save(parcheada);
         return mapper.toDto(saved);
     }
