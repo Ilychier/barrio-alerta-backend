@@ -29,5 +29,11 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+### Editor config (compartida por el equipo) ###
+/.cursor
+/.codegraph
+
+### Secrets locales (NO subir al repositorio) ###
+application-local.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.properties
