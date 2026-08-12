@@ -18,26 +18,28 @@ public final class Ciudad {
     private final String nombre;
     private final String departamento;
     private final String pais;
+    private final boolean esCapital;
 
-    private Ciudad(CiudadId id, String nombre, String departamento, String pais) {
+    private Ciudad(CiudadId id, String nombre, String departamento, String pais, boolean esCapital) {
         this.id = id;
         this.nombre = nombre;
         this.departamento = departamento;
         this.pais = pais;
+        this.esCapital = esCapital;
     }
 
     public static Ciudad crear(String nombre, String departamento, String pais) {
         validarNombre(nombre);
         validarDepartamento(departamento);
         validarPais(pais);
-        return new Ciudad(null, nombre.trim(), departamento.trim(), pais.trim());
+        return new Ciudad(null, nombre.trim(), departamento.trim(), pais.trim(), false);
     }
 
-    public static Ciudad reconstruir(Long id, String nombre, String departamento, String pais) {
+    public static Ciudad reconstruir(Long id, String nombre, String departamento, String pais, boolean esCapital) {
         validarNombre(nombre);
         validarDepartamento(departamento);
         validarPais(pais);
-        return new Ciudad(new CiudadId(id), nombre.trim(), departamento.trim(), pais.trim());
+        return new Ciudad(new CiudadId(id), nombre.trim(), departamento.trim(), pais.trim(), esCapital);
     }
 
     private static void validarNombre(String nombre) {
@@ -71,4 +73,5 @@ public final class Ciudad {
     public String getNombre() { return nombre; }
     public String getDepartamento() { return departamento; }
     public String getPais() { return pais; }
+    public boolean isEsCapital() { return esCapital; }
 }

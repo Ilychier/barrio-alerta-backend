@@ -27,6 +27,10 @@ public interface BarrioDtoMapper {
 
     ListarBarriosQuery toListarQuery(Paginacion paginacion);
 
+    default ListarBarriosQuery toListarQuery(Long localidadId, Paginacion paginacion) {
+        return new ListarBarriosQuery(paginacion, localidadId);
+    }
+
     BarrioResponseDTO toResponse(BarrioDTO dto);
 
     default Page<BarrioResponseDTO> toResponsePage(Pagina<BarrioDTO> pagina) {

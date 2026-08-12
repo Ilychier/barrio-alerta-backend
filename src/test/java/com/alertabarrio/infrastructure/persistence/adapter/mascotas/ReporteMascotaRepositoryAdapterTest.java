@@ -51,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.*;
     "TRUNCATE TABLE users RESTART IDENTITY",
     "TRUNCATE TABLE categoria_descripciones RESTART IDENTITY",
     "TRUNCATE TABLE barrios RESTART IDENTITY",
+    "TRUNCATE TABLE localidades RESTART IDENTITY",
     "TRUNCATE TABLE cuadrantes RESTART IDENTITY",
     "TRUNCATE TABLE categorias RESTART IDENTITY",
     "SET REFERENTIAL_INTEGRITY TRUE"
@@ -77,13 +78,16 @@ class ReporteMascotaRepositoryAdapterTest {
     private CiudadJpaRepository ciudadJpaRepository;
 
     @Autowired
+    private com.alertabarrio.infrastructure.persistence.repository.LocalidadJpaRepository localidadJpaRepository;
+
+    @Autowired
     private TipoMascotaJpaRepository tipoMascotaJpaRepository;
 
     private ReporteMascotaRepositoryAdapter adapter;
     private UserEntity usuario;
     private CiudadEntity ciudad;
     private TipoMascotaEntity tipoMascota;
-    private com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity ciudadPrincipal;
+    private com.alertabarrio.infrastructure.persistence.entity.LocalidadEntity localidadPrincipal;
 
     @BeforeEach
     void setUp() {
@@ -92,11 +96,13 @@ class ReporteMascotaRepositoryAdapterTest {
         CuadranteEntity cuadrante = cuadranteJpaRepository.save(
                 new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
         ciudad = ciudadJpaRepository.save(new CiudadEntity("Cali", "Valle del Cauca", "Colombia"));
-        // La CiudadEntity del paquete principal (BC Alertas) mapea la misma tabla ciudades;
-        // se usa solo como referencia de FK para BarrioEntity (LAZY, solo importa el id)
-        ciudadPrincipal = new com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity();
-        ciudadPrincipal.setId(ciudad.getId());
-        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante, ciudadPrincipal));
+        // Localidad del paquete principal (BC Alertas): se persiste con el municipio de Cali
+        com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity municipio =
+                new com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity();
+        municipio.setId(ciudad.getId());
+        localidadPrincipal = localidadJpaRepository.save(
+                new com.alertabarrio.infrastructure.persistence.entity.LocalidadEntity("Centro", municipio));
+        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante, localidadPrincipal));
         usuario = userJpaRepository.save(
                 new UserEntity("Juan", "juan@test.com", "+573001111111", "Calle 1", "pass123", barrio));
         tipoMascota = tipoMascotaJpaRepository.save(new TipoMascotaEntity("Perro", true));
@@ -303,7 +309,7 @@ class ReporteMascotaRepositoryAdapterTest {
                 "Ana", "ana@test.com", "+573002222222", "Calle 2", "pass123",
                 barrioJpaRepository.save(new BarrioEntity("Norte",
                         cuadranteJpaRepository.save(new CuadranteEntity("CAI Norte", "+573003333333", "cai@test.com")),
-                        ciudadPrincipal))));
+                        localidadPrincipal))));
 
         Pagina<ReporteMascota> delUsuario = adapter.findByUsuarioId(new UsuarioId(usuario.getId()), Paginacion.of(0, 10));
         Pagina<ReporteMascota> delOtro = adapter.findByUsuarioId(new UsuarioId(otro.getId()), Paginacion.of(0, 10));

@@ -9,5 +9,4 @@ import org.mapstruct.Mapping;
 public interface CiudadDomainMapper {
 
     @Mapping(target = "id", source = "id.value")
-    CiudadDTO toDto(Ciudad ciudad);
-}
+    CiudadDTO toDto(Ciudad ciudad);}

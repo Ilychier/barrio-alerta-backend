@@ -7,25 +7,25 @@ import com.alertabarrio.application.mapper.BarrioDomainMapper;
 import com.alertabarrio.domain.exception.ResourceConflictException;
 import com.alertabarrio.domain.exception.ResourceNotFoundException;
 import com.alertabarrio.domain.model.Barrio;
-import com.alertabarrio.domain.model.valueobject.CiudadId;
 import com.alertabarrio.domain.model.valueobject.CuadranteId;
+import com.alertabarrio.domain.model.valueobject.LocalidadId;
 import com.alertabarrio.domain.port.in.CrearBarrioUseCase;
 import com.alertabarrio.domain.port.out.BarrioRepositoryPort;
-import com.alertabarrio.domain.port.out.CiudadInfoPort;
 import com.alertabarrio.domain.port.out.CuadranteRepositoryPort;
+import com.alertabarrio.domain.port.out.LocalidadRepositoryPort;
 
 @UseCase
 public class CrearBarrioUseCaseImpl implements CrearBarrioUseCase {
 
     private final BarrioRepositoryPort barrioRepository;
     private final CuadranteRepositoryPort cuadranteRepository;
-    private final CiudadInfoPort ciudadInfoPort;
+    private final LocalidadRepositoryPort localidadRepository;
     private final BarrioDomainMapper mapper;
 
-    public CrearBarrioUseCaseImpl(BarrioRepositoryPort barrioRepository, CuadranteRepositoryPort cuadranteRepository, CiudadInfoPort ciudadInfoPort, BarrioDomainMapper mapper) {
+    public CrearBarrioUseCaseImpl(BarrioRepositoryPort barrioRepository, CuadranteRepositoryPort cuadranteRepository, LocalidadRepositoryPort localidadRepository, BarrioDomainMapper mapper) {
         this.barrioRepository = barrioRepository;
         this.cuadranteRepository = cuadranteRepository;
-        this.ciudadInfoPort = ciudadInfoPort;
+        this.localidadRepository = localidadRepository;
         this.mapper = mapper;
     }
 
@@ -37,10 +37,10 @@ public class CrearBarrioUseCaseImpl implements CrearBarrioUseCase {
         if (!cuadranteRepository.existsById(new CuadranteId(command.cuadranteId()))) {
             throw new ResourceNotFoundException("Cuadrante", command.cuadranteId());
         }
-        if (!ciudadInfoPort.findById(new CiudadId(command.ciudadId())).isPresent()) {
-            throw new ResourceNotFoundException("Ciudad", command.ciudadId());
+        if (!localidadRepository.findById(new LocalidadId(command.localidadId())).isPresent()) {
+            throw new ResourceNotFoundException("Localidad", command.localidadId());
         }
-        Barrio barrio = Barrio.crear(command.nombre(), command.cuadranteId(), command.ciudadId());
+        Barrio barrio = Barrio.crear(command.nombre(), command.cuadranteId(), command.localidadId());
         Barrio saved = barrioRepository.save(barrio);
         return mapper.toDto(saved);
     }

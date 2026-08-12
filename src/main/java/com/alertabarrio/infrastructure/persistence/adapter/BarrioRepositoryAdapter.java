@@ -68,4 +68,17 @@ public class BarrioRepositoryAdapter implements BarrioRepositoryPort {
                 page.getTotalPages()
         );
     }
+
+    @Override
+    public Pagina<Barrio> findAllByLocalidadId(Long localidadId, Paginacion paginacion) {
+        Pageable pageable = PaginacionHelper.toPageable(paginacion);
+        Page<BarrioEntity> page = jpaRepository.findByLocalidad_Id(localidadId, pageable);
+        return new Pagina<>(
+                page.getContent().stream().map(mapper::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
+    }
 }

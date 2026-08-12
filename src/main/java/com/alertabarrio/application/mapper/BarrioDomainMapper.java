@@ -10,6 +10,6 @@ public interface BarrioDomainMapper {
 
     @Mapping(target = "id", source = "id.value")
     @Mapping(target = "cuadranteId", source = "cuadranteId.value")
-    @Mapping(target = "ciudadId", source = "ciudadId.value")
+    @Mapping(target = "localidadId", source = "localidadId.value")
     BarrioDTO toDto(Barrio barrio);
 }

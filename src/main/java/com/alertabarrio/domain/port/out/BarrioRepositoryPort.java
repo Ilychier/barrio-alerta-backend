@@ -13,4 +13,5 @@ public interface BarrioRepositoryPort {
     void deleteById(BarrioId id);
     boolean existsByNombre(String nombre);
     Pagina<Barrio> findAll(Paginacion paginacion);
+    Pagina<Barrio> findAllByLocalidadId(Long localidadId, Paginacion paginacion);
 }

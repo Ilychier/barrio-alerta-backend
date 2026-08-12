@@ -3,6 +3,6 @@ package com.alertabarrio.adapters.rest.dto;
 public record BarrioRequestDTO(
         String nombre,
         Long cuadranteId,
-        Long ciudadId
+        Long localidadId
 ) {
 }

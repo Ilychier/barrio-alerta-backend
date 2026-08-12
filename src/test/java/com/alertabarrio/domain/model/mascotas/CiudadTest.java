@@ -85,26 +85,27 @@ class CiudadTest {
         @Test
         @DisplayName("con datos válidos retorna Ciudad con id")
         void conDatosValidos_retornaCiudadConId() {
-            Ciudad ciudad = Ciudad.reconstruir(1L, "Quibdó", "Chocó", "Colombia");
+            Ciudad ciudad = Ciudad.reconstruir(1L, "Quibdó", "Chocó", "Colombia", true);
 
             assertNotNull(ciudad.getId());
             assertEquals(1L, ciudad.getId().value());
             assertEquals("Quibdó", ciudad.getNombre());
             assertEquals("Chocó", ciudad.getDepartamento());
+            assertTrue(ciudad.isEsCapital());
         }
 
         @Test
         @DisplayName("con nombre nulo lanza CiudadInvalidaException")
         void conNombreNulo_lanzaExcepcion() {
             assertThrows(CiudadInvalidaException.class,
-                    () -> Ciudad.reconstruir(1L, null, "Chocó", "Colombia"));
+                    () -> Ciudad.reconstruir(1L, null, "Chocó", "Colombia", false));
         }
 
         @Test
         @DisplayName("con departamento nulo lanza CiudadInvalidaException")
         void conDepartamentoNulo_lanzaExcepcion() {
             assertThrows(CiudadInvalidaException.class,
-                    () -> Ciudad.reconstruir(1L, "Quibdó", null, "Colombia"));
+                    () -> Ciudad.reconstruir(1L, "Quibdó", null, "Colombia", false));
         }
     }
 }

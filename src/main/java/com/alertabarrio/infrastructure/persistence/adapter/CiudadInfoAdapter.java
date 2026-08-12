@@ -29,7 +29,8 @@ public class CiudadInfoAdapter implements CiudadInfoPort {
                 entity.getId(),
                 entity.getNombre(),
                 entity.getDepartamento(),
-                entity.getPais()
+                entity.getPais(),
+                entity.isEsCapital()
         );
     }
 }

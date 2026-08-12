@@ -14,6 +14,7 @@ public interface CiudadEntityMapper {
                 dominio.getDepartamento(),
                 dominio.getPais()
         );
+        entity.setEsCapital(dominio.isEsCapital());
         if (dominio.getId() != null) {
             entity.setId(dominio.getId().value());
         }
@@ -26,7 +27,8 @@ public interface CiudadEntityMapper {
                 entity.getId(),
                 entity.getNombre(),
                 entity.getDepartamento(),
-                entity.getPais()
+                entity.getPais(),
+                entity.isEsCapital()
         );
     }
 }

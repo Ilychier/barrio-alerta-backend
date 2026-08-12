@@ -19,6 +19,9 @@ public class CiudadInfoEntity {
     @Column(name = "pais", nullable = false, length = 50)
     private String pais;
 
+    @Column(name = "es_capital", nullable = false)
+    private boolean esCapital = false;
+
     public CiudadInfoEntity() {}
 
     public CiudadInfoEntity(String nombre, String departamento, String pais) {
@@ -35,4 +38,6 @@ public class CiudadInfoEntity {
     public void setDepartamento(String departamento) { this.departamento = departamento; }
     public String getPais() { return pais; }
     public void setPais(String pais) { this.pais = pais; }
+    public boolean isEsCapital() { return esCapital; }
+    public void setEsCapital(boolean esCapital) { this.esCapital = esCapital; }
 }

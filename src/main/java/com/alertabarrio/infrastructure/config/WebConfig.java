@@ -23,6 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/auth/register",
                         "/api/email/send-email",
                         "/api/barrios/**",
+                        "/api/public/localidades/**",
                         // BC Mascotas: consultas públicas (feed, detalle, historias, catálogos)
                         "/api/mascotas/public/**",
                         "/swagger-ui/**",

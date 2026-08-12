@@ -4,6 +4,7 @@ public record CiudadDTO(
         Long id,
         String nombre,
         String departamento,
-        String pais
+        String pais,
+        boolean esCapital
 ) {
 }

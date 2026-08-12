@@ -5,10 +5,12 @@ import com.alertabarrio.domain.model.valueobject.BarrioId;
 import com.alertabarrio.infrastructure.persistence.entity.BarrioEntity;
 import com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity;
 import com.alertabarrio.infrastructure.persistence.entity.CuadranteEntity;
+import com.alertabarrio.infrastructure.persistence.entity.LocalidadEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.BarrioEntityMapper;
 import com.alertabarrio.infrastructure.persistence.repository.BarrioJpaRepository;
 import com.alertabarrio.infrastructure.persistence.repository.CiudadInfoJpaRepository;
 import com.alertabarrio.infrastructure.persistence.repository.CuadranteJpaRepository;
+import com.alertabarrio.infrastructure.persistence.repository.LocalidadJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
     "TRUNCATE TABLE users RESTART IDENTITY",
     "TRUNCATE TABLE categoria_descripciones RESTART IDENTITY",
     "TRUNCATE TABLE barrios RESTART IDENTITY",
+    "TRUNCATE TABLE localidades RESTART IDENTITY",
     "TRUNCATE TABLE ciudades RESTART IDENTITY",
     "TRUNCATE TABLE cuadrantes RESTART IDENTITY",
     "TRUNCATE TABLE categorias RESTART IDENTITY",
@@ -52,22 +55,26 @@ class BarrioRepositoryAdapterTest {
     @Autowired
     private CiudadInfoJpaRepository ciudadJpaRepository;
 
+    @Autowired
+    private LocalidadJpaRepository localidadJpaRepository;
+
     private BarrioRepositoryAdapter adapter;
     private CuadranteEntity cuadrante;
-    private CiudadInfoEntity ciudad;
+    private LocalidadEntity localidad;
 
     @BeforeEach
     void setUp() {
         BarrioEntityMapper mapper = new BarrioEntityMapper() {};
         adapter = new BarrioRepositoryAdapter(jpaRepository, mapper);
         cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
-        ciudad = ciudadJpaRepository.save(new CiudadInfoEntity("Medellín", "Antioquia", "Colombia"));
+        CiudadInfoEntity ciudad = ciudadJpaRepository.save(new CiudadInfoEntity("Medellín", "Antioquia", "Colombia"));
+        localidad = localidadJpaRepository.save(new LocalidadEntity("Castilla", ciudad));
     }
 
     @Test
     @DisplayName("save: persiste nuevo Barrio y asigna id")
     void save_barrioNuevo_persisteYDevuelveConId() {
-        Barrio barrio = Barrio.crear("Centro", cuadrante.getId(), ciudad.getId());
+        Barrio barrio = Barrio.crear("Centro", cuadrante.getId(), localidad.getId());
         Barrio saved = adapter.save(barrio);
         assertNotNull(saved.getId());
         assertTrue(saved.getId().value() > 0);
@@ -77,9 +84,9 @@ class BarrioRepositoryAdapterTest {
     @Test
     @DisplayName("save: actualiza Barrio existente")
     void save_barrioExistente_actualiza() {
-        BarrioEntity entity = new BarrioEntity("Centro", cuadrante, ciudad);
+        BarrioEntity entity = new BarrioEntity("Centro", cuadrante, localidad);
         entity = jpaRepository.save(entity);
-        Barrio paraActualizar = Barrio.reconstruir(entity.getId(), "Norte", cuadrante.getId(), ciudad.getId());
+        Barrio paraActualizar = Barrio.reconstruir(entity.getId(), "Norte", cuadrante.getId(), localidad.getId());
         Barrio actualizada = adapter.save(paraActualizar);
         assertEquals("Norte", actualizada.getNombre());
     }
@@ -87,7 +94,7 @@ class BarrioRepositoryAdapterTest {
     @Test
     @DisplayName("findById: existente devuelve Barrio")
     void findById_existente_devuelveBarrio() {
-        BarrioEntity entity = new BarrioEntity("Centro", cuadrante, ciudad);
+        BarrioEntity entity = new BarrioEntity("Centro", cuadrante, localidad);
         entity = jpaRepository.save(entity);
         Optional<Barrio> result = adapter.findById(new BarrioId(entity.getId()));
         assertTrue(result.isPresent());
@@ -103,7 +110,7 @@ class BarrioRepositoryAdapterTest {
     @Test
     @DisplayName("existsById: existente devuelve true")
     void existsById_existente_devuelveTrue() {
-        BarrioEntity entity = jpaRepository.save(new BarrioEntity("Centro", cuadrante, ciudad));
+        BarrioEntity entity = jpaRepository.save(new BarrioEntity("Centro", cuadrante, localidad));
         assertTrue(adapter.existsById(new BarrioId(entity.getId())));
     }
 
@@ -116,7 +123,7 @@ class BarrioRepositoryAdapterTest {
     @Test
     @DisplayName("deleteById: elimina y ya no existe")
     void deleteById_existente_elimina() {
-        BarrioEntity entity = jpaRepository.save(new BarrioEntity("Centro", cuadrante, ciudad));
+        BarrioEntity entity = jpaRepository.save(new BarrioEntity("Centro", cuadrante, localidad));
         BarrioId id = new BarrioId(entity.getId());
         adapter.deleteById(id);
         assertFalse(adapter.existsById(id));
@@ -125,7 +132,7 @@ class BarrioRepositoryAdapterTest {
     @Test
     @DisplayName("existsByNombre: existente devuelve true")
     void existsByNombre_existente_devuelveTrue() {
-        jpaRepository.save(new BarrioEntity("Centro", cuadrante, ciudad));
+        jpaRepository.save(new BarrioEntity("Centro", cuadrante, localidad));
         assertTrue(adapter.existsByNombre("Centro"));
     }
 
@@ -138,9 +145,9 @@ class BarrioRepositoryAdapterTest {
     @Test
     @DisplayName("findAll: devuelve página paginada")
     void findAll_devuelvePagina() {
-        jpaRepository.save(new BarrioEntity("A", cuadrante, ciudad));
-        jpaRepository.save(new BarrioEntity("B", cuadrante, ciudad));
-        jpaRepository.save(new BarrioEntity("C", cuadrante, ciudad));
+        jpaRepository.save(new BarrioEntity("A", cuadrante, localidad));
+        jpaRepository.save(new BarrioEntity("B", cuadrante, localidad));
+        jpaRepository.save(new BarrioEntity("C", cuadrante, localidad));
         Pagina<Barrio> pagina = adapter.findAll(Paginacion.of(0, 2));
         assertEquals(2, pagina.contenido().size());
         assertEquals(3, pagina.totalElementos());

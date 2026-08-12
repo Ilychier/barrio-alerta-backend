@@ -4,12 +4,14 @@ import com.alertabarrio.domain.model.User;
 import com.alertabarrio.domain.model.valueobject.UsuarioId;
 import com.alertabarrio.infrastructure.persistence.entity.BarrioEntity;
 import com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity;
+import com.alertabarrio.infrastructure.persistence.entity.LocalidadEntity;
 import com.alertabarrio.infrastructure.persistence.entity.CuadranteEntity;
 import com.alertabarrio.infrastructure.persistence.entity.UserEntity;
 import com.alertabarrio.infrastructure.persistence.mapper.UserEntityMapper;
 import com.alertabarrio.infrastructure.persistence.repository.BarrioJpaRepository;
 import com.alertabarrio.infrastructure.persistence.repository.CiudadInfoJpaRepository;
 import com.alertabarrio.infrastructure.persistence.repository.CuadranteJpaRepository;
+import com.alertabarrio.infrastructure.persistence.repository.LocalidadJpaRepository;
 import com.alertabarrio.infrastructure.persistence.repository.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
     "TRUNCATE TABLE users RESTART IDENTITY",
     "TRUNCATE TABLE categoria_descripciones RESTART IDENTITY",
     "TRUNCATE TABLE barrios RESTART IDENTITY",
+    "TRUNCATE TABLE localidades RESTART IDENTITY",
     "TRUNCATE TABLE ciudades RESTART IDENTITY",
     "TRUNCATE TABLE cuadrantes RESTART IDENTITY",
     "TRUNCATE TABLE categorias RESTART IDENTITY",
@@ -57,6 +60,9 @@ class UsuarioRepositoryAdapterTest {
     @Autowired
     private CiudadInfoJpaRepository ciudadJpaRepository;
 
+    @Autowired
+    private LocalidadJpaRepository localidadJpaRepository;
+
     private UsuarioRepositoryAdapter adapter;
     private BarrioEntity barrio;
 
@@ -66,7 +72,8 @@ class UsuarioRepositoryAdapterTest {
         adapter = new UsuarioRepositoryAdapter(jpaRepository, mapper);
         CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
         CiudadInfoEntity ciudad = ciudadJpaRepository.save(new CiudadInfoEntity("Medellín", "Antioquia", "Colombia"));
-        barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante, ciudad));
+        LocalidadEntity localidad = localidadJpaRepository.save(new LocalidadEntity("Castilla", ciudad));
+        barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante, localidad));
     }
 
     @Test

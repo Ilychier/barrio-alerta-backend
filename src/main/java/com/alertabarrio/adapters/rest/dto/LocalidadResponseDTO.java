@@ -1,9 +1,8 @@
 package com.alertabarrio.adapters.rest.dto;
 
-public record BarrioResponseDTO(
+public record LocalidadResponseDTO(
         Long id,
         String nombre,
-        Long cuadranteId,
-        Long localidadId
+        Long municipioId
 ) {
 }
