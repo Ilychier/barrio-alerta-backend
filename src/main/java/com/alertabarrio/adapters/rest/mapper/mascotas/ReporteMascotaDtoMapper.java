@@ -43,6 +43,7 @@ public interface ReporteMascotaDtoMapper {
                 dto.id(),
                 dto.tipoReporte(),
                 dto.tipoMascotaId(),
+                dto.otroTipoMascota(),
                 dto.ciudadId(),
                 dto.ubicacion(),
                 ocultarTelefono ? null : dto.telefono(),

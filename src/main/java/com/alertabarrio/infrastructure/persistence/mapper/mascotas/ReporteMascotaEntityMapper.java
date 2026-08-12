@@ -22,6 +22,7 @@ public interface ReporteMascotaEntityMapper {
                 usuario,
                 dominio.getTipoReporte().name(),
                 tipoMascota,
+                dominio.getOtroTipoMascota(),
                 ciudad,
                 dominio.getUbicacion(),
                 dominio.getTelefono().value(),
@@ -49,7 +50,8 @@ public interface ReporteMascotaEntityMapper {
                 entity.getEstado(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
-                entity.getUsuario().getId()
+                entity.getUsuario().getId(),
+                entity.getOtroTipoMascota()
         );
     }
 }

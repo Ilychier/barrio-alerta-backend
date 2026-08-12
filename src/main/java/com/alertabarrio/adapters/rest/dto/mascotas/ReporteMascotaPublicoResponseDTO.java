@@ -16,6 +16,7 @@ public record ReporteMascotaPublicoResponseDTO(
         Long id,
         String tipoReporte,
         Long tipoMascotaId,      // resuelve nombre via GET /public/tipos-mascota
+        String otroTipoMascota,  // texto libre cuando tipoMascotaId = "Otro"
         Long ciudadId,           // resuelve nombre via GET /public/ciudades
         String ubicacion,
         String telefono,         // null si estado=RESCUED

@@ -24,6 +24,9 @@ public class ReporteMascotaEntity {
     @JoinColumn(name = "tipo_mascota_id", nullable = false)
     private TipoMascotaEntity tipoMascota;
 
+    @Column(name = "otro_tipo_mascota", length = 50)
+    private String otroTipoMascota;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ciudad_id", nullable = false)
     private CiudadEntity ciudad;
@@ -51,9 +54,17 @@ public class ReporteMascotaEntity {
     public ReporteMascotaEntity(UserEntity usuario, String tipoReporte, TipoMascotaEntity tipoMascota,
                                 CiudadEntity ciudad, String ubicacion, String telefono, String descripcion,
                                 String estado, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(usuario, tipoReporte, tipoMascota, null, ciudad, ubicacion, telefono, descripcion,
+                estado, createdAt, updatedAt);
+    }
+
+    public ReporteMascotaEntity(UserEntity usuario, String tipoReporte, TipoMascotaEntity tipoMascota,
+                                String otroTipoMascota, CiudadEntity ciudad, String ubicacion, String telefono,
+                                String descripcion, String estado, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.usuario = usuario;
         this.tipoReporte = tipoReporte;
         this.tipoMascota = tipoMascota;
+        this.otroTipoMascota = otroTipoMascota;
         this.ciudad = ciudad;
         this.ubicacion = ubicacion;
         this.telefono = telefono;
@@ -71,6 +82,8 @@ public class ReporteMascotaEntity {
     public void setTipoReporte(String tipoReporte) { this.tipoReporte = tipoReporte; }
     public TipoMascotaEntity getTipoMascota() { return tipoMascota; }
     public void setTipoMascota(TipoMascotaEntity tipoMascota) { this.tipoMascota = tipoMascota; }
+    public String getOtroTipoMascota() { return otroTipoMascota; }
+    public void setOtroTipoMascota(String otroTipoMascota) { this.otroTipoMascota = otroTipoMascota; }
     public CiudadEntity getCiudad() { return ciudad; }
     public void setCiudad(CiudadEntity ciudad) { this.ciudad = ciudad; }
     public String getUbicacion() { return ubicacion; }

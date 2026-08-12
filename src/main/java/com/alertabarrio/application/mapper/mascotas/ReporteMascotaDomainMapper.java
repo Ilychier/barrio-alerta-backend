@@ -11,6 +11,7 @@ public interface ReporteMascotaDomainMapper {
     @Mapping(target = "id", source = "id.value")
     @Mapping(target = "tipoReporte", source = "tipoReporte")
     @Mapping(target = "tipoMascotaId", source = "tipoMascotaId.value")
+    @Mapping(target = "otroTipoMascota", source = "otroTipoMascota")
     @Mapping(target = "ciudadId", source = "ciudadId.value")
     @Mapping(target = "telefono", source = "telefono.value")
     @Mapping(target = "estado", source = "estado")

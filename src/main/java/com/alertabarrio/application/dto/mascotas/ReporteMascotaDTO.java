@@ -12,6 +12,7 @@ public record ReporteMascotaDTO(
         Long id,
         String tipoReporte,
         Long tipoMascotaId,
+        String otroTipoMascota,
         Long ciudadId,
         String ubicacion,
         String telefono,

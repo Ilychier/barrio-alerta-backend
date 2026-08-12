@@ -28,6 +28,7 @@ public final class ReporteMascota {
     private final ReporteMascotaId id;
     private final TipoReporte tipoReporte;
     private final TipoMascotaId tipoMascotaId;
+    private final String otroTipoMascota;
     private final CiudadId ciudadId;
     private final String ubicacion;
     private final Telefono telefono;
@@ -38,12 +39,13 @@ public final class ReporteMascota {
     private final UsuarioId usuarioId;
 
     private ReporteMascota(ReporteMascotaId id, TipoReporte tipoReporte, TipoMascotaId tipoMascotaId,
-                           CiudadId ciudadId, String ubicacion, Telefono telefono, String descripcion,
-                           EstadoReporte estado, LocalDateTime createdAt, LocalDateTime updatedAt,
-                           UsuarioId usuarioId) {
+                           String otroTipoMascota, CiudadId ciudadId, String ubicacion, Telefono telefono,
+                           String descripcion, EstadoReporte estado, LocalDateTime createdAt,
+                           LocalDateTime updatedAt, UsuarioId usuarioId) {
         this.id = id;
         this.tipoReporte = tipoReporte;
         this.tipoMascotaId = tipoMascotaId;
+        this.otroTipoMascota = otroTipoMascota;
         this.ciudadId = ciudadId;
         this.ubicacion = ubicacion;
         this.telefono = telefono;
@@ -60,7 +62,7 @@ public final class ReporteMascota {
      */
     public static ReporteMascota crear(String tipoReporte, Long tipoMascotaId, Long ciudadId,
                                        String ubicacion, String telefono, String descripcion,
-                                       Long usuarioId, Clock reloj) {
+                                       Long usuarioId, String otroTipoMascota, Clock reloj) {
         validarUbicacion(ubicacion);
         if (usuarioId == null) {
             throw new ReporteMascotaInvalidoException("El ID del usuario no puede ser nulo");
@@ -76,6 +78,7 @@ public final class ReporteMascota {
                 null,
                 TipoReporte.fromString(tipoReporte),
                 new TipoMascotaId(tipoMascotaId),
+                normalizarOtroTipoMascota(otroTipoMascota),
                 new CiudadId(ciudadId),
                 ubicacion.trim(),
                 new Telefono(telefono),
@@ -93,7 +96,7 @@ public final class ReporteMascota {
     public static ReporteMascota reconstruir(Long id, String tipoReporte, Long tipoMascotaId, Long ciudadId,
                                              String ubicacion, String telefono, String descripcion,
                                              String estado, LocalDateTime createdAt, LocalDateTime updatedAt,
-                                             Long usuarioId) {
+                                             Long usuarioId, String otroTipoMascota) {
         if (id == null) {
             throw new ReporteMascotaInvalidoException("El ID del reporte no puede ser nulo al reconstruir");
         }
@@ -105,6 +108,7 @@ public final class ReporteMascota {
                 new ReporteMascotaId(id),
                 TipoReporte.fromString(tipoReporte),
                 new TipoMascotaId(tipoMascotaId),
+                normalizarOtroTipoMascota(otroTipoMascota),
                 new CiudadId(ciudadId),
                 ubicacion.trim(),
                 new Telefono(telefono),
@@ -114,6 +118,18 @@ public final class ReporteMascota {
                 updatedAt,
                 new UsuarioId(usuarioId)
         );
+    }
+
+    private static String normalizarOtroTipoMascota(String otroTipoMascota) {
+        if (otroTipoMascota == null || otroTipoMascota.isBlank()) {
+            return null;
+        }
+        String normalizado = otroTipoMascota.trim();
+        if (normalizado.length() > 50) {
+            throw new ReporteMascotaInvalidoException(
+                    "El tipo de mascota especificado no puede exceder 50 caracteres");
+        }
+        return normalizado;
     }
 
     /**
@@ -127,6 +143,7 @@ public final class ReporteMascota {
                 this.id,
                 this.tipoReporte,
                 this.tipoMascotaId,
+                this.otroTipoMascota,
                 this.ciudadId,
                 ubicacion.trim(),
                 new Telefono(telefono),
@@ -155,6 +172,7 @@ public final class ReporteMascota {
                 this.id,
                 this.tipoReporte,
                 this.tipoMascotaId,
+                this.otroTipoMascota,
                 this.ciudadId,
                 this.ubicacion,
                 this.telefono,
@@ -185,6 +203,7 @@ public final class ReporteMascota {
     public ReporteMascotaId getId() { return id; }
     public TipoReporte getTipoReporte() { return tipoReporte; }
     public TipoMascotaId getTipoMascotaId() { return tipoMascotaId; }
+    public String getOtroTipoMascota() { return otroTipoMascota; }
     public CiudadId getCiudadId() { return ciudadId; }
     public String getUbicacion() { return ubicacion; }
     public Telefono getTelefono() { return telefono; }
