@@ -36,7 +36,7 @@ class ReporteMascotaTest {
         @DisplayName("con datos válidos retorna ReporteMascota sin id, estado ACTIVE y timestamps del reloj")
         void conDatosValidos_retornaReporte() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
 
             assertNull(reporte.getId());
             assertEquals(TipoReporte.LOST, reporte.getTipoReporte());
@@ -55,7 +55,7 @@ class ReporteMascotaTest {
         @DisplayName("con tipo FOUND retorna tipo FOUND")
         void conTipoFound_retornaFound() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    TIPO_FOUND, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, null, USUARIO_ID, null, RELOJ);
+                    TIPO_FOUND, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, null, USUARIO_ID, null, null, RELOJ);
             assertEquals(TipoReporte.FOUND, reporte.getTipoReporte());
         }
 
@@ -63,7 +63,7 @@ class ReporteMascotaTest {
         @DisplayName("con descripcion null permite descripcion null (fricción baja de entrada)")
         void conDescripcionNull_permitida() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, null, USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, null, USUARIO_ID, null, null, RELOJ);
             assertNull(reporte.getDescripcion());
         }
 
@@ -72,14 +72,14 @@ class ReporteMascotaTest {
         void conTipoInvalido_lanzaExcepcion() {
             assertThrows(IllegalArgumentException.class,
                     () -> ReporteMascota.crear(
-                            "PERDIDO", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ));
+                            "PERDIDO", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ));
         }
 
         @Test
         @DisplayName("con tipoReporte en minúsculas normaliza a enum")
         void conTipoMinusculas_normaliza() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    "lost", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ);
+                    "lost", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
             assertEquals(TipoReporte.LOST, reporte.getTipoReporte());
         }
 
@@ -88,7 +88,7 @@ class ReporteMascotaTest {
         void conUsuarioNulo_lanzaExcepcion() {
             assertThrows(ReporteMascotaInvalidoException.class,
                     () -> ReporteMascota.crear(
-                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, null, null, RELOJ));
+                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, null, null, null, RELOJ));
         }
 
         @Test
@@ -96,7 +96,7 @@ class ReporteMascotaTest {
         void conTipoMascotaNulo_lanzaExcepcion() {
             assertThrows(ReporteMascotaInvalidoException.class,
                     () -> ReporteMascota.crear(
-                            TIPO_LOST, null, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ));
+                            TIPO_LOST, null, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ));
         }
 
         @Test
@@ -104,7 +104,7 @@ class ReporteMascotaTest {
         void conCiudadNula_lanzaExcepcion() {
             assertThrows(ReporteMascotaInvalidoException.class,
                     () -> ReporteMascota.crear(
-                            TIPO_LOST, TIPO_MASCOTA_ID, null, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ));
+                            TIPO_LOST, TIPO_MASCOTA_ID, null, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ));
         }
 
         @Test
@@ -112,7 +112,7 @@ class ReporteMascotaTest {
         void conUbicacionVacia_lanzaExcepcion() {
             assertThrows(ReporteMascotaInvalidoException.class,
                     () -> ReporteMascota.crear(
-                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, "   ", TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ));
+                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, "   ", TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ));
         }
 
         @Test
@@ -121,7 +121,7 @@ class ReporteMascotaTest {
             String ubicacionLarga = "a".repeat(256);
             assertThrows(ReporteMascotaInvalidoException.class,
                     () -> ReporteMascota.crear(
-                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, ubicacionLarga, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ));
+                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, ubicacionLarga, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ));
         }
 
         @Test
@@ -129,14 +129,14 @@ class ReporteMascotaTest {
         void conTelefonoInvalido_lanzaExcepcion() {
             assertThrows(IllegalArgumentException.class,
                     () -> ReporteMascota.crear(
-                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, "no-es-un-telefono", DESCRIPCION, USUARIO_ID, null, RELOJ));
+                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, "no-es-un-telefono", DESCRIPCION, USUARIO_ID, null, null, RELOJ));
         }
 
         @Test
         @DisplayName("recorta espacios en ubicacion y descripcion")
         void recortaEspacios() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, "  Barrio La Soledad  ", TELEFONO, "  Perro criollo  ", USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, "  Barrio La Soledad  ", TELEFONO, "  Perro criollo  ", USUARIO_ID, null, null, RELOJ);
             assertEquals("Barrio La Soledad", reporte.getUbicacion());
             assertEquals("Perro criollo", reporte.getDescripcion());
         }
@@ -145,7 +145,7 @@ class ReporteMascotaTest {
         @DisplayName("con otroTipoMascota lo conserva recortado")
         void conOtroTipoMascota_loConserva() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, "  Conejo  ", RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, "  Conejo  ", null, RELOJ);
             assertEquals("Conejo", reporte.getOtroTipoMascota());
         }
 
@@ -153,7 +153,7 @@ class ReporteMascotaTest {
         @DisplayName("con otroTipoMascota null lo deja null (tipos estándar)")
         void conOtroTipoMascotaNull_permitido() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
             assertNull(reporte.getOtroTipoMascota());
         }
 
@@ -161,7 +161,7 @@ class ReporteMascotaTest {
         @DisplayName("con otroTipoMascota en blanco lo normaliza a null")
         void conOtroTipoMascotaBlanco_normalizaANull() {
             ReporteMascota reporte = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, "   ", RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, "   ", null, RELOJ);
             assertNull(reporte.getOtroTipoMascota());
         }
 
@@ -171,7 +171,41 @@ class ReporteMascotaTest {
             String largo = "a".repeat(51);
             assertThrows(ReporteMascotaInvalidoException.class,
                     () -> ReporteMascota.crear(
-                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, largo, RELOJ));
+                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, largo, null, RELOJ));
+        }
+
+        @Test
+        @DisplayName("con fotoUrl lo conserva recortado")
+        void conFotoUrl_loConserva() {
+            ReporteMascota reporte = ReporteMascota.crear(
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null,
+                    "/uploads/abc-123.jpg", RELOJ);
+            assertEquals("/uploads/abc-123.jpg", reporte.getFotoUrl());
+        }
+
+        @Test
+        @DisplayName("con fotoUrl null lo deja null (foto opcional)")
+        void conFotoUrlNull_permitido() {
+            ReporteMascota reporte = ReporteMascota.crear(
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
+            assertNull(reporte.getFotoUrl());
+        }
+
+        @Test
+        @DisplayName("con fotoUrl en blanco lo normaliza a null")
+        void conFotoUrlBlanco_normalizaANull() {
+            ReporteMascota reporte = ReporteMascota.crear(
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, "   ", RELOJ);
+            assertNull(reporte.getFotoUrl());
+        }
+
+        @Test
+        @DisplayName("con fotoUrl que excede 500 caracteres lanza ReporteMascotaInvalidoException")
+        void conFotoUrlExcede500Chars_lanzaExcepcion() {
+            String largo = "a".repeat(501);
+            assertThrows(ReporteMascotaInvalidoException.class,
+                    () -> ReporteMascota.crear(
+                            TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, largo, RELOJ));
         }
     }
 
@@ -185,7 +219,7 @@ class ReporteMascotaTest {
             LocalDateTime fecha = LocalDateTime.now(RELOJ);
             ReporteMascota reporte = ReporteMascota.reconstruir(
                     1L, "LOST", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION,
-                    "ACTIVE", fecha, fecha, USUARIO_ID, null);
+                    "ACTIVE", fecha, fecha, USUARIO_ID, null, "/uploads/abc-123.jpg");
 
             assertNotNull(reporte.getId());
             assertEquals(1L, reporte.getId().value());
@@ -193,6 +227,7 @@ class ReporteMascotaTest {
             assertEquals(EstadoReporte.ACTIVE, reporte.getEstado());
             assertEquals(fecha, reporte.getCreatedAt());
             assertEquals(fecha, reporte.getUpdatedAt());
+            assertEquals("/uploads/abc-123.jpg", reporte.getFotoUrl());
         }
 
         @Test
@@ -201,7 +236,7 @@ class ReporteMascotaTest {
             LocalDateTime fecha = LocalDateTime.now(RELOJ);
             ReporteMascota reporte = ReporteMascota.reconstruir(
                     1L, "LOST", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION,
-                    "RESCUED", fecha, fecha, USUARIO_ID, null);
+                    "RESCUED", fecha, fecha, USUARIO_ID, null, null);
             assertEquals(EstadoReporte.RESCUED, reporte.getEstado());
         }
 
@@ -212,7 +247,7 @@ class ReporteMascotaTest {
             assertThrows(ReporteMascotaInvalidoException.class,
                     () -> ReporteMascota.reconstruir(
                             null, "LOST", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION,
-                            "ACTIVE", fecha, fecha, USUARIO_ID, null));
+                            "ACTIVE", fecha, fecha, USUARIO_ID, null, null));
         }
 
         @Test
@@ -222,7 +257,7 @@ class ReporteMascotaTest {
             assertThrows(IllegalArgumentException.class,
                     () -> ReporteMascota.reconstruir(
                             1L, "LOST", TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION,
-                            "ELIMINADO", fecha, fecha, USUARIO_ID, null));
+                            "ELIMINADO", fecha, fecha, USUARIO_ID, null, null));
         }
     }
 
@@ -232,7 +267,7 @@ class ReporteMascotaTest {
 
         private ReporteMascota reporteActivo() {
             return ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
         }
 
         @Test
@@ -289,7 +324,7 @@ class ReporteMascotaTest {
         @DisplayName("actualiza campos editables retornando nueva instancia")
         void actualizaCamposEditables() {
             ReporteMascota original = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
 
             ReporteMascota actualizado = original.actualizar(
                     "Barrio El Prado, carrera 12", "+573009876543", "Ahora con correa azul", RELOJ);
@@ -313,7 +348,7 @@ class ReporteMascotaTest {
 
         private ReporteMascota reporteActivo() {
             return ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
         }
     }
 
@@ -325,7 +360,7 @@ class ReporteMascotaTest {
         @DisplayName("retorna nueva instancia con estado DELETED (soft delete)")
         void eliminar_retornaEliminado() {
             ReporteMascota original = ReporteMascota.crear(
-                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, RELOJ);
+                    TIPO_LOST, TIPO_MASCOTA_ID, CIUDAD_ID, UBICACION, TELEFONO, DESCRIPCION, USUARIO_ID, null, null, RELOJ);
 
             ReporteMascota eliminado = original.eliminar(RELOJ);
 

@@ -8,11 +8,25 @@ import com.alertabarrio.application.query.mascotas.ListarReportesMascotaQuery;
 import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.model.valueobject.Paginacion;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ReporteMascotaDtoMapper {
 
+    @Mapping(target = "fotoUrl", ignore = true)
     CrearReporteMascotaCommand toCrearCommand(CrearReporteMascotaRequestDTO dto);
+
+    /**
+     * Convierte a command inyectando la fotoUrl resuelta por el adapter de
+     * almacenamiento (el cliente no envía la URL; la genera el servidor).
+     */
+    default CrearReporteMascotaCommand toCrearCommand(CrearReporteMascotaRequestDTO dto, String fotoUrl) {
+        CrearReporteMascotaCommand base = toCrearCommand(dto);
+        return new CrearReporteMascotaCommand(
+                base.tipoReporte(), base.tipoMascotaId(), base.otroTipoMascota(),
+                fotoUrl, base.ciudadId(), base.ubicacion(), base.telefono(),
+                base.descripcion(), base.usuarioId());
+    }
 
     ActualizarReporteMascotaCommand toActualizarCommand(Long id, ActualizarReporteMascotaRequestDTO dto);
 
@@ -44,6 +58,7 @@ public interface ReporteMascotaDtoMapper {
                 dto.tipoReporte(),
                 dto.tipoMascotaId(),
                 dto.otroTipoMascota(),
+                dto.fotoUrl(),
                 dto.ciudadId(),
                 dto.ubicacion(),
                 ocultarTelefono ? null : dto.telefono(),

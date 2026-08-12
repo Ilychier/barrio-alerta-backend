@@ -35,6 +35,7 @@ public class CrearReporteMascotaUseCaseImpl implements CrearReporteMascotaUseCas
                 command.descripcion(),
                 command.usuarioId(),
                 command.otroTipoMascota(),
+                command.fotoUrl(),
                 clock);
         ReporteMascota saved = reporteRepository.save(reporte);
         return mapper.toDto(saved);

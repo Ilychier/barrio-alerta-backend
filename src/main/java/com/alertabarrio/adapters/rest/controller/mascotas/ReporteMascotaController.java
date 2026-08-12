@@ -6,12 +6,17 @@ import com.alertabarrio.application.dto.mascotas.ReporteMascotaDTO;
 import com.alertabarrio.domain.model.valueobject.Pagina;
 import com.alertabarrio.domain.model.valueobject.Paginacion;
 import com.alertabarrio.domain.port.in.mascotas.*;
+import com.alertabarrio.domain.port.out.AlmacenamientoArchivoPort;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * Endpoints AUTHENTICATED del BC Mascotas (protegidos por AuthInterceptor).
@@ -28,7 +33,14 @@ public class ReporteMascotaController {
     private final EliminarReporteMascotaUseCase eliminarReporteUseCase;
     private final BuscarReporteMascotaUseCase buscarReporteUseCase;
     private final ListarMisReportesMascotaUseCase listarMisReportesUseCase;
+    private final AlmacenamientoArchivoPort almacenamiento;
     private final ReporteMascotaDtoMapper mapper;
+
+    /**
+     * ObjectMapper local (stateless y thread-safe). No se inyecta como bean
+     * porque spring-boot-starter-webmvc (Boot 4 modular) no lo auto-configura.
+     */
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ReporteMascotaController(
             CrearReporteMascotaUseCase crearReporteUseCase,
@@ -37,6 +49,7 @@ public class ReporteMascotaController {
             EliminarReporteMascotaUseCase eliminarReporteUseCase,
             BuscarReporteMascotaUseCase buscarReporteUseCase,
             ListarMisReportesMascotaUseCase listarMisReportesUseCase,
+            AlmacenamientoArchivoPort almacenamiento,
             ReporteMascotaDtoMapper mapper) {
         this.crearReporteUseCase = crearReporteUseCase;
         this.actualizarReporteUseCase = actualizarReporteUseCase;
@@ -44,12 +57,30 @@ public class ReporteMascotaController {
         this.eliminarReporteUseCase = eliminarReporteUseCase;
         this.buscarReporteUseCase = buscarReporteUseCase;
         this.listarMisReportesUseCase = listarMisReportesUseCase;
+        this.almacenamiento = almacenamiento;
         this.mapper = mapper;
     }
 
-    @PostMapping
-    public ResponseEntity<ReporteMascotaResponseDTO> create(@RequestBody CrearReporteMascotaRequestDTO dto) {
-        ReporteMascotaDTO result = crearReporteUseCase.execute(mapper.toCrearCommand(dto));
+    /**
+     * Crea un reporte con foto opcional (multipart/form-data).
+     * <p>
+     * El controller (adapter REST) recibe el archivo, delega la persistencia
+     * al puerto de almacenamiento y solo inyecta la URL resultante en el
+     * command. El dominio nunca ve {@link MultipartFile}.
+     * <p>
+     * El part "datos" llega como JSON string (React Native lo envía como
+     * text/plain) y se deserializa aquí con ObjectMapper.
+     */
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<ReporteMascotaResponseDTO> create(
+            @RequestPart("datos") String datosJson,
+            @RequestPart(value = "foto", required = false) MultipartFile foto) throws IOException {
+        CrearReporteMascotaRequestDTO dto = objectMapper.readValue(datosJson, CrearReporteMascotaRequestDTO.class);
+        String fotoUrl = null;
+        if (foto != null && !foto.isEmpty()) {
+            fotoUrl = almacenamiento.guardarImagen(foto.getBytes(), foto.getContentType());
+        }
+        ReporteMascotaDTO result = crearReporteUseCase.execute(mapper.toCrearCommand(dto, fotoUrl));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(result));
     }
 

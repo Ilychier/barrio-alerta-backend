@@ -111,7 +111,7 @@ class ReporteMascotaRepositoryAdapterTest {
     private ReporteMascota crearReporte(String tipoReporte) {
         return ReporteMascota.crear(
                 tipoReporte, tipoMascota.getId(), ciudad.getId(),
-                "Barrio La Soledad", "+573001234567", "Perro criollo", usuario.getId(), null, FIXED_CLOCK);
+                "Barrio La Soledad", "+573001234567", "Perro criollo", usuario.getId(), null, null, FIXED_CLOCK);
     }
 
     @Test
@@ -130,14 +130,14 @@ class ReporteMascotaRepositoryAdapterTest {
     @DisplayName("save: actualiza ReporteMascota existente")
     void save_existente_actualiza() {
         ReporteMascotaEntity entity = new ReporteMascotaEntity(
-                usuario, "LOST", tipoMascota, ciudad, "Original", "+573001234567", null,
+                usuario, "LOST", tipoMascota, null, null, ciudad, "Original", "+573001234567", null,
                 "ACTIVE", LocalDateTime.now(), LocalDateTime.now());
         entity = jpaRepository.save(entity);
 
         ReporteMascota rescatada = ReporteMascota.reconstruir(
                 entity.getId(), "LOST", tipoMascota.getId(), ciudad.getId(),
                 "Actualizada", "+573001234567", null, "RESCUED",
-                entity.getCreatedAt(), entity.getUpdatedAt(), usuario.getId(), null);
+                entity.getCreatedAt(), entity.getUpdatedAt(), usuario.getId(), null, null);
 
         ReporteMascota actualizada = adapter.save(rescatada);
 
@@ -259,7 +259,7 @@ class ReporteMascotaRepositoryAdapterTest {
         CiudadEntity otraCiudad = ciudadJpaRepository.save(new CiudadEntity("Quibdó", "Chocó", "Colombia"));
         ReporteMascota enQuibdo = ReporteMascota.crear(
                 "FOUND", tipoMascota.getId(), otraCiudad.getId(),
-                "Parque de Quibdó", "+573173784522", "Gato gris", usuario.getId(), null, FIXED_CLOCK);
+                "Parque de Quibdó", "+573173784522", "Gato gris", usuario.getId(), null, null, FIXED_CLOCK);
         adapter.save(enQuibdo);
 
         Pagina<ReporteMascota> deCiudad1 = adapter.findByFilters(null, null, ciudad.getId(), Paginacion.of(0, 10));

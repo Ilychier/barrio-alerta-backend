@@ -27,6 +27,9 @@ public class ReporteMascotaEntity {
     @Column(name = "otro_tipo_mascota", length = 50)
     private String otroTipoMascota;
 
+    @Column(name = "foto_url", length = 500)
+    private String fotoUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ciudad_id", nullable = false)
     private CiudadEntity ciudad;
@@ -54,17 +57,18 @@ public class ReporteMascotaEntity {
     public ReporteMascotaEntity(UserEntity usuario, String tipoReporte, TipoMascotaEntity tipoMascota,
                                 CiudadEntity ciudad, String ubicacion, String telefono, String descripcion,
                                 String estado, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this(usuario, tipoReporte, tipoMascota, null, ciudad, ubicacion, telefono, descripcion,
+        this(usuario, tipoReporte, tipoMascota, null, null, ciudad, ubicacion, telefono, descripcion,
                 estado, createdAt, updatedAt);
     }
 
     public ReporteMascotaEntity(UserEntity usuario, String tipoReporte, TipoMascotaEntity tipoMascota,
-                                String otroTipoMascota, CiudadEntity ciudad, String ubicacion, String telefono,
+                                String otroTipoMascota, String fotoUrl, CiudadEntity ciudad, String ubicacion, String telefono,
                                 String descripcion, String estado, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.usuario = usuario;
         this.tipoReporte = tipoReporte;
         this.tipoMascota = tipoMascota;
         this.otroTipoMascota = otroTipoMascota;
+        this.fotoUrl = fotoUrl;
         this.ciudad = ciudad;
         this.ubicacion = ubicacion;
         this.telefono = telefono;
@@ -84,6 +88,8 @@ public class ReporteMascotaEntity {
     public void setTipoMascota(TipoMascotaEntity tipoMascota) { this.tipoMascota = tipoMascota; }
     public String getOtroTipoMascota() { return otroTipoMascota; }
     public void setOtroTipoMascota(String otroTipoMascota) { this.otroTipoMascota = otroTipoMascota; }
+    public String getFotoUrl() { return fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
     public CiudadEntity getCiudad() { return ciudad; }
     public void setCiudad(CiudadEntity ciudad) { this.ciudad = ciudad; }
     public String getUbicacion() { return ubicacion; }
