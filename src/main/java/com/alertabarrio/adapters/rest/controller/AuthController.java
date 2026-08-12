@@ -77,7 +77,9 @@ public class AuthController {
                 bundle.user() != null ? usuarioMapper.toResponse(bundle.user()) : null,
                 bundle.barrio() != null ? barrioMapper.toResponse(bundle.barrio()) : null,
                 bundle.cuadrante() != null ? cuadranteMapper.toResponse(bundle.cuadrante()) : null,
-                bundle.configuracion() != null ? configuracionMapper.toResponse(bundle.configuracion()) : null
+                bundle.configuracion() != null ? configuracionMapper.toResponse(bundle.configuracion()) : null,
+                bundle.ciudadNombre(),
+                bundle.paisNombre()
         );
     }
 }

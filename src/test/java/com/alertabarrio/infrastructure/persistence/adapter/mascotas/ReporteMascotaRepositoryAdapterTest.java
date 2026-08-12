@@ -83,6 +83,7 @@ class ReporteMascotaRepositoryAdapterTest {
     private UserEntity usuario;
     private CiudadEntity ciudad;
     private TipoMascotaEntity tipoMascota;
+    private com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity ciudadPrincipal;
 
     @BeforeEach
     void setUp() {
@@ -90,10 +91,14 @@ class ReporteMascotaRepositoryAdapterTest {
         adapter = new ReporteMascotaRepositoryAdapter(jpaRepository, mapper);
         CuadranteEntity cuadrante = cuadranteJpaRepository.save(
                 new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
-        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante));
+        ciudad = ciudadJpaRepository.save(new CiudadEntity("Cali", "Valle del Cauca", "Colombia"));
+        // La CiudadEntity del paquete principal (BC Alertas) mapea la misma tabla ciudades;
+        // se usa solo como referencia de FK para BarrioEntity (LAZY, solo importa el id)
+        ciudadPrincipal = new com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity();
+        ciudadPrincipal.setId(ciudad.getId());
+        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante, ciudadPrincipal));
         usuario = userJpaRepository.save(
                 new UserEntity("Juan", "juan@test.com", "+573001111111", "Calle 1", "pass123", barrio));
-        ciudad = ciudadJpaRepository.save(new CiudadEntity("Cali", "Valle del Cauca", "Colombia"));
         tipoMascota = tipoMascotaJpaRepository.save(new TipoMascotaEntity("Perro", true));
     }
 
@@ -297,7 +302,8 @@ class ReporteMascotaRepositoryAdapterTest {
         UserEntity otro = userJpaRepository.save(new UserEntity(
                 "Ana", "ana@test.com", "+573002222222", "Calle 2", "pass123",
                 barrioJpaRepository.save(new BarrioEntity("Norte",
-                        cuadranteJpaRepository.save(new CuadranteEntity("CAI Norte", "+573003333333", "cai@test.com"))))));
+                        cuadranteJpaRepository.save(new CuadranteEntity("CAI Norte", "+573003333333", "cai@test.com")),
+                        ciudadPrincipal))));
 
         Pagina<ReporteMascota> delUsuario = adapter.findByUsuarioId(new UsuarioId(usuario.getId()), Paginacion.of(0, 10));
         Pagina<ReporteMascota> delOtro = adapter.findByUsuarioId(new UsuarioId(otro.getId()), Paginacion.of(0, 10));

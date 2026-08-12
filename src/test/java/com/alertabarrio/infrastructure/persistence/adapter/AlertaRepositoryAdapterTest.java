@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
     "TRUNCATE TABLE users RESTART IDENTITY",
     "TRUNCATE TABLE categoria_descripciones RESTART IDENTITY",
     "TRUNCATE TABLE barrios RESTART IDENTITY",
+    "TRUNCATE TABLE ciudades RESTART IDENTITY",
     "TRUNCATE TABLE cuadrantes RESTART IDENTITY",
     "TRUNCATE TABLE categorias RESTART IDENTITY",
     "SET REFERENTIAL_INTEGRITY TRUE"
@@ -60,6 +61,9 @@ class AlertaRepositoryAdapterTest {
     @Autowired
     private CategoriaJpaRepository categoriaJpaRepository;
 
+    @Autowired
+    private CiudadInfoJpaRepository ciudadJpaRepository;
+
     private AlertaRepositoryAdapter adapter;
     private UserEntity usuario;
     private CategoriaEntity categoria;
@@ -69,7 +73,8 @@ class AlertaRepositoryAdapterTest {
         AlertaEntityMapper mapper = new AlertaEntityMapper() {};
         adapter = new AlertaRepositoryAdapter(jpaRepository, mapper);
         CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
-        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante));
+        CiudadInfoEntity ciudad = ciudadJpaRepository.save(new CiudadInfoEntity("Medellín", "Antioquia", "Colombia"));
+        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante, ciudad));
         usuario = userJpaRepository.save(new UserEntity("Juan", "juan@test.com", "+573001111111", "Calle 1", "pass123", barrio));
         categoria = categoriaJpaRepository.save(new CategoriaEntity("Robo", "icon-robbery.png"));
     }

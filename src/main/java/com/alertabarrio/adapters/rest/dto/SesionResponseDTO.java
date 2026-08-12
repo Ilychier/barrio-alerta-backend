@@ -5,6 +5,8 @@ public record SesionResponseDTO(
         UsuarioResponseDTO user,
         BarrioResponseDTO barrio,
         CuadranteResponseDTO cuadrante,
-        ConfiguracionResponseDTO configuracion
+        ConfiguracionResponseDTO configuracion,
+        String ciudadNombre,
+        String paisNombre
 ) {
 }

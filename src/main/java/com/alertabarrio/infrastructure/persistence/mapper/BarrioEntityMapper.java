@@ -2,6 +2,7 @@ package com.alertabarrio.infrastructure.persistence.mapper;
 
 import com.alertabarrio.domain.model.Barrio;
 import com.alertabarrio.infrastructure.persistence.entity.BarrioEntity;
+import com.alertabarrio.infrastructure.persistence.entity.CiudadInfoEntity;
 import com.alertabarrio.infrastructure.persistence.entity.CuadranteEntity;
 import org.mapstruct.Mapper;
 
@@ -12,7 +13,9 @@ public interface BarrioEntityMapper {
         if (dominio == null) return null;
         CuadranteEntity cuadrante = new CuadranteEntity();
         cuadrante.setId(dominio.getCuadranteId().value());
-        BarrioEntity entity = new BarrioEntity(dominio.getNombre(), cuadrante);
+        CiudadInfoEntity ciudad = new CiudadInfoEntity();
+        ciudad.setId(dominio.getCiudadId().value());
+        BarrioEntity entity = new BarrioEntity(dominio.getNombre(), cuadrante, ciudad);
         if (dominio.getId() != null) {
             entity.setId(dominio.getId().value());
         }
@@ -24,7 +27,8 @@ public interface BarrioEntityMapper {
         return Barrio.reconstruir(
                 entity.getId(),
                 entity.getNombre(),
-                entity.getCuadrante().getId()
+                entity.getCuadrante().getId(),
+                entity.getCiudad().getId()
         );
     }
 }

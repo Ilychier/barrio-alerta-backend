@@ -8,9 +8,11 @@ import com.alertabarrio.domain.exception.ResourceConflictException;
 import com.alertabarrio.domain.exception.ResourceNotFoundException;
 import com.alertabarrio.domain.model.Barrio;
 import com.alertabarrio.domain.model.valueobject.BarrioId;
+import com.alertabarrio.domain.model.valueobject.CiudadId;
 import com.alertabarrio.domain.model.valueobject.CuadranteId;
 import com.alertabarrio.domain.port.in.ActualizarBarrioUseCase;
 import com.alertabarrio.domain.port.out.BarrioRepositoryPort;
+import com.alertabarrio.domain.port.out.CiudadInfoPort;
 import com.alertabarrio.domain.port.out.CuadranteRepositoryPort;
 
 @UseCase
@@ -18,11 +20,13 @@ public class ActualizarBarrioUseCaseImpl implements ActualizarBarrioUseCase {
 
     private final BarrioRepositoryPort barrioRepository;
     private final CuadranteRepositoryPort cuadranteRepository;
+    private final CiudadInfoPort ciudadInfoPort;
     private final BarrioDomainMapper mapper;
 
-    public ActualizarBarrioUseCaseImpl(BarrioRepositoryPort barrioRepository, CuadranteRepositoryPort cuadranteRepository, BarrioDomainMapper mapper) {
+    public ActualizarBarrioUseCaseImpl(BarrioRepositoryPort barrioRepository, CuadranteRepositoryPort cuadranteRepository, CiudadInfoPort ciudadInfoPort, BarrioDomainMapper mapper) {
         this.barrioRepository = barrioRepository;
         this.cuadranteRepository = cuadranteRepository;
+        this.ciudadInfoPort = ciudadInfoPort;
         this.mapper = mapper;
     }
 
@@ -38,8 +42,11 @@ public class ActualizarBarrioUseCaseImpl implements ActualizarBarrioUseCase {
         if (!cuadranteRepository.existsById(new CuadranteId(command.cuadranteId()))) {
             throw new ResourceNotFoundException("Cuadrante", command.cuadranteId());
         }
+        if (!ciudadInfoPort.findById(new CiudadId(command.ciudadId())).isPresent()) {
+            throw new ResourceNotFoundException("Ciudad", command.ciudadId());
+        }
 
-        Barrio actualizada = Barrio.reconstruir(command.id(), command.nombre(), command.cuadranteId());
+        Barrio actualizada = Barrio.reconstruir(command.id(), command.nombre(), command.cuadranteId(), command.ciudadId());
         Barrio saved = barrioRepository.save(actualizada);
         return mapper.toDto(saved);
     }

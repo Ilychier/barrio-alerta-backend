@@ -5,6 +5,8 @@ public record SesionDTO(
         UsuarioDTO user,
         BarrioDTO barrio,
         CuadranteDTO cuadrante,
-        ConfiguracionDTO configuracion
+        ConfiguracionDTO configuracion,
+        String ciudadNombre,
+        String paisNombre
 ) {
 }

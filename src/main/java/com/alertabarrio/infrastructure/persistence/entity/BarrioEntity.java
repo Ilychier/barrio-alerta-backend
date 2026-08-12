@@ -17,11 +17,16 @@ public class BarrioEntity {
     @JoinColumn(name = "cuadrante_id", nullable = false)
     private CuadranteEntity cuadrante;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ciudad_id", nullable = false)
+    private CiudadInfoEntity ciudad;
+
     public BarrioEntity() {}
 
-    public BarrioEntity(String nombre, CuadranteEntity cuadrante) {
+    public BarrioEntity(String nombre, CuadranteEntity cuadrante, CiudadInfoEntity ciudad) {
         this.nombre = nombre;
         this.cuadrante = cuadrante;
+        this.ciudad = ciudad;
     }
 
     public Long getId() { return id; }
@@ -30,4 +35,6 @@ public class BarrioEntity {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public CuadranteEntity getCuadrante() { return cuadrante; }
     public void setCuadrante(CuadranteEntity cuadrante) { this.cuadrante = cuadrante; }
+    public CiudadInfoEntity getCiudad() { return ciudad; }
+    public void setCiudad(CiudadInfoEntity ciudad) { this.ciudad = ciudad; }
 }
