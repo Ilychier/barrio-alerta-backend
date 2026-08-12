@@ -177,14 +177,99 @@ class ReporteMascotaRepositoryAdapterTest {
     }
 
     @Test
-    @DisplayName("findByFilters: sin filtros devuelve todos")
-    void findByFilters_sinFiltros_devuelveTodos() {
+    @DisplayName("findByFilters: sin filtros excluye DELETED (regresión E2E soft delete)")
+    void findByFilters_excluyeEliminados() {
         adapter.save(crearReporte("LOST"));
-        adapter.save(crearReporte("FOUND"));
+        ReporteMascota eliminada = adapter.save(crearReporte("FOUND")).eliminar(FIXED_CLOCK);
+        adapter.save(eliminada);
 
         Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, null, Paginacion.of(0, 10));
 
-        assertEquals(2, pagina.totalElementos());
+        assertEquals(1, pagina.totalElementos());
+        assertEquals(TipoReporte.LOST, pagina.contenido().get(0).getTipoReporte());
+    }
+
+    @Test
+    @DisplayName("findByFilters: solo tipoReporte excluye DELETED (regresión E2E)")
+    void findByFilters_tipoReporte_excluyeEliminados() {
+        adapter.save(crearReporte("LOST"));
+        ReporteMascota eliminada = adapter.save(crearReporte("LOST")).eliminar(FIXED_CLOCK);
+        adapter.save(eliminada);
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, TipoReporte.LOST, null, Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+    }
+
+    @Test
+    @DisplayName("findByFilters: solo ciudadId excluye DELETED (regresión E2E)")
+    void findByFilters_ciudad_excluyeEliminados() {
+        adapter.save(crearReporte("LOST"));
+        ReporteMascota eliminada = adapter.save(crearReporte("FOUND")).eliminar(FIXED_CLOCK);
+        adapter.save(eliminada);
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, ciudad.getId(), Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+    }
+
+    @Test
+    @DisplayName("findByFilters: tipoReporte + ciudadId excluye DELETED (regresión E2E)")
+    void findByFilters_tipoYCiudad_excluyeEliminados() {
+        adapter.save(crearReporte("LOST"));
+        ReporteMascota eliminada = adapter.save(crearReporte("LOST")).eliminar(FIXED_CLOCK);
+        adapter.save(eliminada);
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, TipoReporte.LOST, ciudad.getId(), Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+    }
+
+    @Test
+    @DisplayName("findByFilters: solo tipoReporte filtra correctamente (regresión E2E)")
+    void findByFilters_soloTipoReporte_filtra() {
+        adapter.save(crearReporte("LOST"));
+        adapter.save(crearReporte("FOUND"));
+
+        Pagina<ReporteMascota> lost = adapter.findByFilters(null, TipoReporte.LOST, null, Paginacion.of(0, 10));
+        Pagina<ReporteMascota> found = adapter.findByFilters(null, TipoReporte.FOUND, null, Paginacion.of(0, 10));
+
+        assertEquals(1, lost.totalElementos());
+        assertEquals(TipoReporte.LOST, lost.contenido().get(0).getTipoReporte());
+        assertEquals(1, found.totalElementos());
+    }
+
+    @Test
+    @DisplayName("findByFilters: solo ciudadId filtra correctamente (regresión E2E)")
+    void findByFilters_soloCiudad_filtra() {
+        adapter.save(crearReporte("LOST")); // ciudad 1
+        adapter.save(crearReporte("FOUND")); // ciudad 1
+
+        CiudadEntity otraCiudad = ciudadJpaRepository.save(new CiudadEntity("Quibdó", "Chocó", "Colombia"));
+        ReporteMascota enQuibdo = ReporteMascota.crear(
+                "FOUND", tipoMascota.getId(), otraCiudad.getId(),
+                "Parque de Quibdó", "+573173784522", "Gato gris", usuario.getId(), FIXED_CLOCK);
+        adapter.save(enQuibdo);
+
+        Pagina<ReporteMascota> deCiudad1 = adapter.findByFilters(null, null, ciudad.getId(), Paginacion.of(0, 10));
+        Pagina<ReporteMascota> deQuibdo = adapter.findByFilters(null, null, otraCiudad.getId(), Paginacion.of(0, 10));
+
+        assertEquals(2, deCiudad1.totalElementos());
+        assertEquals(1, deQuibdo.totalElementos());
+    }
+
+    @Test
+    @DisplayName("findByFilters: tipoReporte + ciudadId combina filtros (regresión E2E)")
+    void findByFilters_tipoYCiudad_combina() {
+        adapter.save(crearReporte("LOST")); // ciudad 1, LOST
+        adapter.save(crearReporte("FOUND")); // ciudad 1, FOUND
+
+        Pagina<ReporteMascota> lostEnCiudad1 = adapter.findByFilters(null, TipoReporte.LOST, ciudad.getId(), Paginacion.of(0, 10));
+        Pagina<ReporteMascota> foundEnCiudad1 = adapter.findByFilters(null, TipoReporte.FOUND, ciudad.getId(), Paginacion.of(0, 10));
+
+        assertEquals(1, lostEnCiudad1.totalElementos());
+        assertEquals(TipoReporte.LOST, lostEnCiudad1.contenido().get(0).getTipoReporte());
+        assertEquals(1, foundEnCiudad1.totalElementos());
     }
 
     @Test

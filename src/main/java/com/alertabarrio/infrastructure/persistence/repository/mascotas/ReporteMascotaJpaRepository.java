@@ -24,6 +24,30 @@ public interface ReporteMascotaJpaRepository extends JpaRepository<ReporteMascot
     Page<ReporteMascotaEntity> findByEstado(
             String estado, Pageable pageable);
 
+    /**
+     * Feed público: excluye DELETED por defecto cuando no se filtra por estado.
+     */
+    Page<ReporteMascotaEntity> findByEstadoNot(
+            String estado, Pageable pageable);
+
+    Page<ReporteMascotaEntity> findByTipoReporte(
+            String tipoReporte, Pageable pageable);
+
+    Page<ReporteMascotaEntity> findByTipoReporteAndEstadoNot(
+            String tipoReporte, String estado, Pageable pageable);
+
+    Page<ReporteMascotaEntity> findByCiudad_Id(
+            Long ciudadId, Pageable pageable);
+
+    Page<ReporteMascotaEntity> findByCiudad_IdAndEstadoNot(
+            Long ciudadId, String estado, Pageable pageable);
+
+    Page<ReporteMascotaEntity> findByTipoReporteAndCiudad_Id(
+            String tipoReporte, Long ciudadId, Pageable pageable);
+
+    Page<ReporteMascotaEntity> findByTipoReporteAndCiudad_IdAndEstadoNot(
+            String tipoReporte, Long ciudadId, String estado, Pageable pageable);
+
     Page<ReporteMascotaEntity> findByUsuario_Id(
             Long usuarioId, Pageable pageable);
 }

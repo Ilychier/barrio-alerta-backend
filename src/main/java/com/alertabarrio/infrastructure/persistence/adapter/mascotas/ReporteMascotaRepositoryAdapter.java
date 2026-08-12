@@ -69,10 +69,20 @@ public class ReporteMascotaRepositoryAdapter implements ReporteMascotaRepository
             page = jpaRepository.findByEstadoAndTipoReporte(estadoStr, tipoStr, pageable);
         } else if (estadoStr != null && ciudadId != null) {
             page = jpaRepository.findByEstadoAndCiudad_Id(estadoStr, ciudadId, pageable);
+        } else if (tipoStr != null && ciudadId != null) {
+            // Sin estado: excluye DELETED (feed público)
+            page = jpaRepository.findByTipoReporteAndCiudad_IdAndEstadoNot(tipoStr, ciudadId, "DELETED", pageable);
         } else if (estadoStr != null) {
             page = jpaRepository.findByEstado(estadoStr, pageable);
+        } else if (tipoStr != null) {
+            // Sin estado: excluye DELETED (feed público)
+            page = jpaRepository.findByTipoReporteAndEstadoNot(tipoStr, "DELETED", pageable);
+        } else if (ciudadId != null) {
+            // Sin estado: excluye DELETED (feed público)
+            page = jpaRepository.findByCiudad_IdAndEstadoNot(ciudadId, "DELETED", pageable);
         } else {
-            page = jpaRepository.findAll(pageable);
+            // Feed público: los reportes DELETED (soft delete) no se muestran
+            page = jpaRepository.findByEstadoNot("DELETED", pageable);
         }
 
         return new Pagina<>(
