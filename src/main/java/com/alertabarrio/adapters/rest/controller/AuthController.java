@@ -1,13 +1,18 @@
 package com.alertabarrio.adapters.rest.controller;
 
+import com.alertabarrio.adapters.rest.dto.CambiarPasswordRequestDTO;
 import com.alertabarrio.adapters.rest.dto.LoginRequestDTO;
 import com.alertabarrio.adapters.rest.dto.SesionResponseDTO;
 import com.alertabarrio.adapters.rest.dto.UsuarioRequestDTO;
+import com.alertabarrio.adapters.rest.dto.UsuarioResponseDTO;
 import com.alertabarrio.adapters.rest.mapper.BarrioDtoMapper;
 import com.alertabarrio.adapters.rest.mapper.ConfiguracionDtoMapper;
 import com.alertabarrio.adapters.rest.mapper.CuadranteDtoMapper;
 import com.alertabarrio.adapters.rest.mapper.UsuarioDtoMapper;
+import com.alertabarrio.application.command.CambiarPasswordCommand;
 import com.alertabarrio.application.command.LoginCommand;
+import com.alertabarrio.application.dto.UsuarioDTO;
+import com.alertabarrio.domain.port.in.CambiarPasswordUseCase;
 import com.alertabarrio.domain.port.in.LoginUseCase;
 import com.alertabarrio.domain.port.in.ObtenerSesionBundleUseCase;
 import com.alertabarrio.domain.port.in.RegistrarYAutenticarUseCase;
@@ -24,6 +29,7 @@ public class AuthController {
     private final LoginUseCase loginUseCase;
     private final RegistrarYAutenticarUseCase registrarYAutenticarUseCase;
     private final ObtenerSesionBundleUseCase obtenerSesionBundleUseCase;
+    private final CambiarPasswordUseCase cambiarPasswordUseCase;
     private final UsuarioDtoMapper usuarioMapper;
     private final BarrioDtoMapper barrioMapper;
     private final CuadranteDtoMapper cuadranteMapper;
@@ -33,6 +39,7 @@ public class AuthController {
             LoginUseCase loginUseCase,
             RegistrarYAutenticarUseCase registrarYAutenticarUseCase,
             ObtenerSesionBundleUseCase obtenerSesionBundleUseCase,
+            CambiarPasswordUseCase cambiarPasswordUseCase,
             UsuarioDtoMapper usuarioMapper,
             BarrioDtoMapper barrioMapper,
             CuadranteDtoMapper cuadranteMapper,
@@ -40,6 +47,7 @@ public class AuthController {
         this.loginUseCase = loginUseCase;
         this.registrarYAutenticarUseCase = registrarYAutenticarUseCase;
         this.obtenerSesionBundleUseCase = obtenerSesionBundleUseCase;
+        this.cambiarPasswordUseCase = cambiarPasswordUseCase;
         this.usuarioMapper = usuarioMapper;
         this.barrioMapper = barrioMapper;
         this.cuadranteMapper = cuadranteMapper;
@@ -69,6 +77,17 @@ public class AuthController {
         }
         var bundle = obtenerSesionBundleUseCase.execute(email);
         return ResponseEntity.ok(toResponse(null, bundle));
+    }
+
+    /**
+     * Cambia la contraseña. Si el usuario tiene clave temporal
+     * (passwordTemporal=true), no exige la actual (el JWT ya autentica).
+     */
+    @PostMapping("/cambiar-password")
+    public ResponseEntity<UsuarioResponseDTO> cambiarPassword(@RequestBody CambiarPasswordRequestDTO dto) {
+        UsuarioDTO result = cambiarPasswordUseCase.execute(
+                new CambiarPasswordCommand(dto.identificador(), dto.passwordActual(), dto.passwordNueva()));
+        return ResponseEntity.ok(usuarioMapper.toResponse(result));
     }
 
     private SesionResponseDTO toResponse(String token, com.alertabarrio.application.dto.SesionDTO bundle) {

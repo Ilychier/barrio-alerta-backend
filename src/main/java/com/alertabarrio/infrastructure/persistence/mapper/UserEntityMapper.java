@@ -10,15 +10,19 @@ public interface UserEntityMapper {
 
     default UserEntity toEntity(User dominio) {
         if (dominio == null) return null;
-        BarrioEntity barrio = new BarrioEntity();
-        barrio.setId(dominio.getBarrioId().value());
+        BarrioEntity barrio = null;
+        if (dominio.getBarrioId() != null) {
+            barrio = new BarrioEntity();
+            barrio.setId(dominio.getBarrioId().value());
+        }
         UserEntity entity = new UserEntity(
                 dominio.getName(),
                 dominio.getEmail().value(),
                 dominio.getPhone().value(),
                 dominio.getAddress(),
                 dominio.getPassword(),
-                barrio
+                barrio,
+                dominio.isPasswordTemporal()
         );
         if (dominio.getId() != null) {
             entity.setId(dominio.getId().value());
@@ -28,6 +32,7 @@ public interface UserEntityMapper {
 
     default User toDomain(UserEntity entity) {
         if (entity == null) return null;
+        Long barrioId = entity.getBarrio() != null ? entity.getBarrio().getId() : null;
         return User.reconstruir(
                 entity.getId(),
                 entity.getName(),
@@ -35,7 +40,8 @@ public interface UserEntityMapper {
                 entity.getPhone(),
                 entity.getAddress(),
                 entity.getPassword(),
-                entity.getBarrio().getId()
+                barrioId,
+                entity.isPasswordTemporal()
         );
     }
 }
