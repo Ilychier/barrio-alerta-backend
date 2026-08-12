@@ -44,7 +44,7 @@ public class ListarReportesMascotaUseCaseImpl implements ListarReportesMascotaUs
         TipoReporte tipoReporte = query.tipoReporte() != null ? TipoReporte.fromString(query.tipoReporte()) : null;
 
         Pagina<ReporteMascota> pagina = reporteRepository.findByFilters(
-                estado, tipoReporte, query.ciudadId(), query.paginacion());
+                estado, tipoReporte, query.ciudadId(), query.busqueda(), query.paginacion());
 
         return new Pagina<>(
                 pagina.contenido().stream().map(mapper::toDto).toList(),

@@ -28,11 +28,11 @@ public interface ReporteMascotaRepositoryPort {
     void deleteById(ReporteMascotaId id);
 
     /**
-     * Feed público: filtra por estado, tipo de reporte y ciudad.
+     * Feed público: filtra por estado, tipo de reporte, ciudad y búsqueda por texto.
      * Cualquier filtro puede ser null para no filtrar.
      */
     Pagina<ReporteMascota> findByFilters(EstadoReporte estado, TipoReporte tipoReporte,
-                                         Long ciudadId, Paginacion paginacion);
+                                         Long ciudadId, String busqueda, Paginacion paginacion);
 
     /**
      * Historias de rescate: reportes con estado RESCUED.

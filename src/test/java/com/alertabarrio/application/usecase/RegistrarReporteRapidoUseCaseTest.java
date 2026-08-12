@@ -185,7 +185,7 @@ class RegistrarReporteRapidoUseCaseTest {
         @Override public Optional<ReporteMascota> findById(ReporteMascotaId id) { return Optional.empty(); }
         @Override public boolean existsById(ReporteMascotaId id) { return false; }
         @Override public void deleteById(ReporteMascotaId id) {}
-        @Override public Pagina<ReporteMascota> findByFilters(EstadoReporte e, TipoReporte t, Long c, Paginacion p) { return new Pagina<>(List.of(), 0, 0, 0, 0); }
+        @Override public Pagina<ReporteMascota> findByFilters(EstadoReporte e, TipoReporte t, Long c, String b, Paginacion p) { return new Pagina<>(List.of(), 0, 0, 0, 0); }
         @Override public Pagina<ReporteMascota> findByEstado(EstadoReporte e, Paginacion p) { return new Pagina<>(List.of(), 0, 0, 0, 0); }
         @Override public Pagina<ReporteMascota> findByUsuarioId(UsuarioId u, Paginacion p) { return new Pagina<>(List.of(), 0, 0, 0, 0); }
     }

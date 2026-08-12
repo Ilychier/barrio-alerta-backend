@@ -181,7 +181,7 @@ class ReporteMascotaRepositoryAdapterTest {
         adapter.save(rescatada);
 
         Pagina<ReporteMascota> pagina = adapter.findByFilters(
-                EstadoReporte.ACTIVE, TipoReporte.LOST, ciudad.getId(), Paginacion.of(0, 10));
+                EstadoReporte.ACTIVE, TipoReporte.LOST, ciudad.getId(), null, Paginacion.of(0, 10));
 
         assertEquals(1, pagina.totalElementos());
         assertEquals("LOST", pagina.contenido().get(0).getTipoReporte().name());
@@ -194,7 +194,7 @@ class ReporteMascotaRepositoryAdapterTest {
         ReporteMascota eliminada = adapter.save(crearReporte("FOUND")).eliminar(FIXED_CLOCK);
         adapter.save(eliminada);
 
-        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, null, Paginacion.of(0, 10));
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, null, null, Paginacion.of(0, 10));
 
         assertEquals(1, pagina.totalElementos());
         assertEquals(TipoReporte.LOST, pagina.contenido().get(0).getTipoReporte());
@@ -207,7 +207,7 @@ class ReporteMascotaRepositoryAdapterTest {
         ReporteMascota eliminada = adapter.save(crearReporte("LOST")).eliminar(FIXED_CLOCK);
         adapter.save(eliminada);
 
-        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, TipoReporte.LOST, null, Paginacion.of(0, 10));
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, TipoReporte.LOST, null, null, Paginacion.of(0, 10));
 
         assertEquals(1, pagina.totalElementos());
     }
@@ -219,7 +219,7 @@ class ReporteMascotaRepositoryAdapterTest {
         ReporteMascota eliminada = adapter.save(crearReporte("FOUND")).eliminar(FIXED_CLOCK);
         adapter.save(eliminada);
 
-        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, ciudad.getId(), Paginacion.of(0, 10));
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, ciudad.getId(), null, Paginacion.of(0, 10));
 
         assertEquals(1, pagina.totalElementos());
     }
@@ -231,7 +231,7 @@ class ReporteMascotaRepositoryAdapterTest {
         ReporteMascota eliminada = adapter.save(crearReporte("LOST")).eliminar(FIXED_CLOCK);
         adapter.save(eliminada);
 
-        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, TipoReporte.LOST, ciudad.getId(), Paginacion.of(0, 10));
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, TipoReporte.LOST, ciudad.getId(), null, Paginacion.of(0, 10));
 
         assertEquals(1, pagina.totalElementos());
     }
@@ -242,8 +242,8 @@ class ReporteMascotaRepositoryAdapterTest {
         adapter.save(crearReporte("LOST"));
         adapter.save(crearReporte("FOUND"));
 
-        Pagina<ReporteMascota> lost = adapter.findByFilters(null, TipoReporte.LOST, null, Paginacion.of(0, 10));
-        Pagina<ReporteMascota> found = adapter.findByFilters(null, TipoReporte.FOUND, null, Paginacion.of(0, 10));
+        Pagina<ReporteMascota> lost = adapter.findByFilters(null, TipoReporte.LOST, null, null, Paginacion.of(0, 10));
+        Pagina<ReporteMascota> found = adapter.findByFilters(null, TipoReporte.FOUND, null, null, Paginacion.of(0, 10));
 
         assertEquals(1, lost.totalElementos());
         assertEquals(TipoReporte.LOST, lost.contenido().get(0).getTipoReporte());
@@ -262,8 +262,8 @@ class ReporteMascotaRepositoryAdapterTest {
                 "Parque de Quibdó", "+573173784522", "Gato gris", usuario.getId(), null, null, FIXED_CLOCK);
         adapter.save(enQuibdo);
 
-        Pagina<ReporteMascota> deCiudad1 = adapter.findByFilters(null, null, ciudad.getId(), Paginacion.of(0, 10));
-        Pagina<ReporteMascota> deQuibdo = adapter.findByFilters(null, null, otraCiudad.getId(), Paginacion.of(0, 10));
+        Pagina<ReporteMascota> deCiudad1 = adapter.findByFilters(null, null, ciudad.getId(), null, Paginacion.of(0, 10));
+        Pagina<ReporteMascota> deQuibdo = adapter.findByFilters(null, null, otraCiudad.getId(), null, Paginacion.of(0, 10));
 
         assertEquals(2, deCiudad1.totalElementos());
         assertEquals(1, deQuibdo.totalElementos());
@@ -275,8 +275,8 @@ class ReporteMascotaRepositoryAdapterTest {
         adapter.save(crearReporte("LOST")); // ciudad 1, LOST
         adapter.save(crearReporte("FOUND")); // ciudad 1, FOUND
 
-        Pagina<ReporteMascota> lostEnCiudad1 = adapter.findByFilters(null, TipoReporte.LOST, ciudad.getId(), Paginacion.of(0, 10));
-        Pagina<ReporteMascota> foundEnCiudad1 = adapter.findByFilters(null, TipoReporte.FOUND, ciudad.getId(), Paginacion.of(0, 10));
+        Pagina<ReporteMascota> lostEnCiudad1 = adapter.findByFilters(null, TipoReporte.LOST, ciudad.getId(), null, Paginacion.of(0, 10));
+        Pagina<ReporteMascota> foundEnCiudad1 = adapter.findByFilters(null, TipoReporte.FOUND, ciudad.getId(), null, Paginacion.of(0, 10));
 
         assertEquals(1, lostEnCiudad1.totalElementos());
         assertEquals(TipoReporte.LOST, lostEnCiudad1.contenido().get(0).getTipoReporte());
@@ -324,10 +324,125 @@ class ReporteMascotaRepositoryAdapterTest {
         adapter.save(crearReporte("LOST"));
         adapter.save(crearReporte("FOUND"));
 
-        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, null, Paginacion.of(0, 1));
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(null, null, null, null, Paginacion.of(0, 1));
 
         assertEquals(1, pagina.contenido().size());
         assertEquals(2, pagina.totalElementos());
         assertEquals(0, pagina.pagina());
+    }
+
+    // ─── Búsqueda por texto ───────────────────────────────────────────────
+
+    private ReporteMascota crearReporteCon(String tipoReporte, String ubicacion, String descripcion) {
+        return ReporteMascota.crear(
+                tipoReporte, tipoMascota.getId(), ciudad.getId(),
+                ubicacion, "+573001234567", descripcion, usuario.getId(), null, null, FIXED_CLOCK);
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda coincide en descripcion (case-insensitive)")
+    void findByFilters_busqueda_coincideEnDescripcion() {
+        adapter.save(crearReporteCon("LOST", "Barrio La Soledad", "Gato naranja perdido en el parque"));
+        adapter.save(crearReporteCon("LOST", "Barrio El Prado", "Perro criollo callejero"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                null, null, null, "gato naranja", Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+        assertEquals("Gato naranja perdido en el parque", pagina.contenido().get(0).getDescripcion());
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda AND entre tokens (descripcion sin todos los tokens no coincide)")
+    void findByFilters_busqueda_andEntreTokens() {
+        adapter.save(crearReporteCon("LOST", "Barrio La Soledad", "Gato naranja perdido"));
+        adapter.save(crearReporteCon("LOST", "Barrio El Prado", "Gato negro en la avenida"));
+        adapter.save(crearReporteCon("LOST", "Barrio Granada", "Perro naranja con collar"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                null, null, null, "gato naranja", Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+        assertEquals("Gato naranja perdido", pagina.contenido().get(0).getDescripcion());
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda OR entre campos (token en ubicacion coincide)")
+    void findByFilters_busqueda_orEntreCampos() {
+        adapter.save(crearReporteCon("LOST", "Barrio La Soledad", "Gato perdido"));
+        adapter.save(crearReporteCon("LOST", "Parque Naranja", "Perro perdido"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                null, null, null, "naranja", Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+        assertEquals("Parque Naranja", pagina.contenido().get(0).getUbicacion());
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda case-insensitive (mayúsculas coinciden)")
+    void findByFilters_busqueda_caseInsensitive() {
+        adapter.save(crearReporteCon("LOST", "Barrio La Soledad", "Gato siamés"));
+        adapter.save(crearReporteCon("LOST", "Barrio El Prado", "Conejo blanco"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                null, null, null, "GATO", Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+        assertEquals("Gato siamés", pagina.contenido().get(0).getDescripcion());
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda por subcadena (gatonaranjaa coincide con gato naranja)")
+    void findByFilters_busqueda_subcadena() {
+        adapter.save(crearReporteCon("LOST", "Barrio La Soledad", "Gatonaranjaa en la calle 5"));
+        adapter.save(crearReporteCon("LOST", "Barrio El Prado", "Perro labrador"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                null, null, null, "gato naranja", Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+        assertEquals("Gatonaranjaa en la calle 5", pagina.contenido().get(0).getDescripcion());
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda excluye DELETED (regresión feed público)")
+    void findByFilters_busqueda_excluyeEliminados() {
+        ReporteMascota eliminada = adapter.save(
+                        crearReporteCon("LOST", "Barrio La Soledad", "Gato naranja perdido"))
+                .eliminar(FIXED_CLOCK);
+        adapter.save(eliminada);
+        adapter.save(crearReporteCon("LOST", "Barrio El Prado", "Gato naranja en el parque"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                null, null, null, "gato naranja", Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+        assertEquals("Gato naranja en el parque", pagina.contenido().get(0).getDescripcion());
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda en blanco no filtra")
+    void findByFilters_busqueda_blancoNoFiltra() {
+        adapter.save(crearReporteCon("LOST", "Barrio La Soledad", "Gato naranja"));
+        adapter.save(crearReporteCon("FOUND", "Barrio El Prado", "Perro criollo"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                null, null, null, "   ", Paginacion.of(0, 10));
+
+        assertEquals(2, pagina.totalElementos());
+    }
+
+    @Test
+    @DisplayName("findByFilters: búsqueda combinada con estado y ciudad")
+    void findByFilters_busqueda_combinaConOtrosFiltros() {
+        adapter.save(crearReporteCon("LOST", "Barrio La Soledad", "Gato naranja perdido"));
+        adapter.save(crearReporteCon("FOUND", "Barrio La Soledad", "Gato naranja encontrado"));
+
+        Pagina<ReporteMascota> pagina = adapter.findByFilters(
+                EstadoReporte.ACTIVE, TipoReporte.LOST, ciudad.getId(), "gato naranja", Paginacion.of(0, 10));
+
+        assertEquals(1, pagina.totalElementos());
+        assertEquals(TipoReporte.LOST, pagina.contenido().get(0).getTipoReporte());
     }
 }

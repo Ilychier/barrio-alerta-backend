@@ -36,8 +36,9 @@ public interface ReporteMascotaDtoMapper {
 
     BuscarReporteMascotaQuery toBuscarQuery(Long id);
 
-    default ListarReportesMascotaQuery toListarQuery(Paginacion paginacion, String estado, String tipoReporte, Long ciudadId) {
-        return new ListarReportesMascotaQuery(paginacion, estado, tipoReporte, ciudadId);
+    default ListarReportesMascotaQuery toListarQuery(Paginacion paginacion, String estado, String tipoReporte,
+                                                     Long ciudadId, String busqueda) {
+        return new ListarReportesMascotaQuery(paginacion, estado, tipoReporte, ciudadId, busqueda);
     }
 
     ReporteMascotaResponseDTO toResponse(ReporteMascotaDTO dto);

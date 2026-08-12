@@ -45,6 +45,7 @@ public class ReporteMascotaPublicoController {
             @RequestParam(required = false) String estado,        // ACTIVE | RESCUED
             @RequestParam(required = false) String tipoReporte,   // LOST | FOUND
             @RequestParam(required = false) Long ciudadId,
+            @RequestParam(required = false) String busqueda,      // texto en descripcion/ubicacion
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         String orden = pageable.getSort().stream().findFirst()
                 .map(Sort.Order::getProperty).orElse(null);
@@ -52,7 +53,7 @@ public class ReporteMascotaPublicoController {
                 .map(o -> o.getDirection().name().toLowerCase()).orElse(null);
         Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(), orden, direccion);
         Pagina<ReporteMascotaDTO> result = listarReportesUseCase.execute(
-                mapper.toListarQuery(paginacion, estado, tipoReporte, ciudadId));
+                mapper.toListarQuery(paginacion, estado, tipoReporte, ciudadId, busqueda));
         return ResponseEntity.ok(mapper.toPublicoResponsePage(result));
     }
 

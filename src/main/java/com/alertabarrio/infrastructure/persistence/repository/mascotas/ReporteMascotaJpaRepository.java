@@ -4,50 +4,25 @@ import com.alertabarrio.infrastructure.persistence.entity.mascotas.ReporteMascot
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface ReporteMascotaJpaRepository extends JpaRepository<ReporteMascotaEntity, Long> {
-
-    /**
-     * Feed público: filtra por estado y tipo de reporte, con ciudad opcional.
-     * Todos los parámetros son obligatorios en la firma; los no deseados se
-     * resuelven con null en el adapter (que decide el query a usar).
-     */
-    Page<ReporteMascotaEntity> findByEstadoAndTipoReporteAndCiudad_Id(
-            String estado, String tipoReporte, Long ciudadId, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByEstadoAndTipoReporte(
-            String estado, String tipoReporte, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByEstadoAndCiudad_Id(
-            String estado, Long ciudadId, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByEstado(
-            String estado, Pageable pageable);
+/**
+ * Repositorio Spring Data de {@link ReporteMascotaEntity}.
+ * <p>
+ * El feed público usa {@link JpaSpecificationExecutor} para construir filtros
+ * dinámicos (estado, tipo, ciudad, búsqueda) sin multiplicar métodos derivados.
+ * Los métodos derivados restantes cubren consultas fijas (historias, mis reportes).
+ */
+public interface ReporteMascotaJpaRepository
+        extends JpaRepository<ReporteMascotaEntity, Long>, JpaSpecificationExecutor<ReporteMascotaEntity> {
 
     /**
-     * Feed público: excluye DELETED por defecto cuando no se filtra por estado.
+     * Historias de rescate: reportes con un estado específico.
      */
-    Page<ReporteMascotaEntity> findByEstadoNot(
-            String estado, Pageable pageable);
+    Page<ReporteMascotaEntity> findByEstado(String estado, Pageable pageable);
 
-    Page<ReporteMascotaEntity> findByTipoReporte(
-            String tipoReporte, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByTipoReporteAndEstadoNot(
-            String tipoReporte, String estado, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByCiudad_Id(
-            Long ciudadId, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByCiudad_IdAndEstadoNot(
-            Long ciudadId, String estado, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByTipoReporteAndCiudad_Id(
-            String tipoReporte, Long ciudadId, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByTipoReporteAndCiudad_IdAndEstadoNot(
-            String tipoReporte, Long ciudadId, String estado, Pageable pageable);
-
-    Page<ReporteMascotaEntity> findByUsuario_Id(
-            Long usuarioId, Pageable pageable);
+    /**
+     * Mis reportes: reportes de un usuario (incluye DELETED).
+     */
+    Page<ReporteMascotaEntity> findByUsuario_Id(Long usuarioId, Pageable pageable);
 }
