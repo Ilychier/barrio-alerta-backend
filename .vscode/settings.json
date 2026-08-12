@@ -2,5 +2,6 @@
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.compile.nullAnalysis.mode": "automatic",
   "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
-  "java.autobuild.enabled": true
+  "java.autobuild.enabled": true,
+  "java.debug.settings.onBuildFailureProceed": true
 }
