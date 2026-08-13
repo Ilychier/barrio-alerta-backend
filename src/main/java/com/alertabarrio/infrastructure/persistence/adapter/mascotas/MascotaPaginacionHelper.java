@@ -20,7 +20,14 @@ final class MascotaPaginacionHelper {
             Sort.Direction dir = "desc".equalsIgnoreCase(p.direccion())
                     ? Sort.Direction.DESC
                     : Sort.Direction.ASC;
-            return PageRequest.of(p.pagina(), p.tamanio(), Sort.by(dir, p.orden()));
+            // Tiebreaker por id (ASC): sort determinista y estable. Sin él, filas con
+            // el mismo valor de orden pueden aparecer en dos páginas consecutivas,
+            // duplicando registros en el feed (keys duplicadas en el frontend).
+            Sort sort = Sort.by(dir, p.orden());
+            if (!"id".equalsIgnoreCase(p.orden())) {
+                sort = sort.and(Sort.by(Sort.Direction.ASC, "id"));
+            }
+            return PageRequest.of(p.pagina(), p.tamanio(), sort);
         }
         return PageRequest.of(p.pagina(), p.tamanio());
     }

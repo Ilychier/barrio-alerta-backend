@@ -33,6 +33,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -329,6 +330,32 @@ class ReporteMascotaRepositoryAdapterTest {
         assertEquals(1, pagina.contenido().size());
         assertEquals(2, pagina.totalElementos());
         assertEquals(0, pagina.pagina());
+    }
+
+    @Test
+    @DisplayName("findByFilters: paginación por createdAt DESC no duplica ids entre páginas (tiebreaker por id)")
+    void findByFilters_paginacion_empatesNoDuplican() {
+        // Todos comparten el MISMO createdAt (FIXED_CLOCK) → empates reales
+        adapter.save(crearReporte("LOST"));
+        adapter.save(crearReporte("LOST"));
+        adapter.save(crearReporte("LOST"));
+        adapter.save(crearReporte("LOST"));
+
+        Pagina<ReporteMascota> p1 = adapter.findByFilters(
+                null, null, null, null, Paginacion.of(0, 2, "createdAt", "desc"));
+        Pagina<ReporteMascota> p2 = adapter.findByFilters(
+                null, null, null, null, Paginacion.of(1, 2, "createdAt", "desc"));
+
+        assertEquals(4, p1.totalElementos());
+        assertEquals(2, p1.contenido().size());
+        assertEquals(2, p2.contenido().size());
+
+        // Ningún id aparece en ambas páginas → sin keys duplicadas en el frontend
+        List<Long> idsP1 = p1.contenido().stream().map(r -> r.getId().value()).toList();
+        List<Long> idsP2 = p2.contenido().stream().map(r -> r.getId().value()).toList();
+        assertEquals(idsP1.stream().distinct().count(), idsP1.size(), "página 1 sin ids repetidos");
+        assertEquals(idsP2.stream().distinct().count(), idsP2.size(), "página 2 sin ids repetidos");
+        assertTrue(idsP1.stream().noneMatch(idsP2::contains), "ningún id compartido entre páginas");
     }
 
     // ─── Búsqueda por texto ───────────────────────────────────────────────
