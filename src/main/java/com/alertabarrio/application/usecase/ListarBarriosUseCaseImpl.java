@@ -23,7 +23,9 @@ public class ListarBarriosUseCaseImpl implements ListarBarriosUseCase {
 
     @Override
     public Pagina<BarrioDTO> execute(ListarBarriosQuery query) {
-        Pagina<com.alertabarrio.domain.model.Barrio> barriosPage = barrioRepository.findAll(query.paginacion());
+        Pagina<com.alertabarrio.domain.model.Barrio> barriosPage = query.localidadId() != null
+                ? barrioRepository.findAllByLocalidadId(query.localidadId(), query.paginacion())
+                : barrioRepository.findAll(query.paginacion());
         return new Pagina<>(
                 barriosPage.contenido().stream().map(mapper::toDto).toList(),
                 barriosPage.pagina(),

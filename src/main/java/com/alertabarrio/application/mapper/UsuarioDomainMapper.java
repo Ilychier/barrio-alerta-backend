@@ -12,5 +12,6 @@ public interface UsuarioDomainMapper {
     @Mapping(target = "email", source = "email.value")
     @Mapping(target = "phone", source = "phone.value")
     @Mapping(target = "barrioId", source = "barrioId.value")
+    @Mapping(target = "passwordTemporal", source = "passwordTemporal")
     UsuarioDTO toDto(User user);
 }

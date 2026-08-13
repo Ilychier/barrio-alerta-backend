@@ -9,20 +9,24 @@ import com.alertabarrio.domain.exception.ResourceNotFoundException;
 import com.alertabarrio.domain.model.Barrio;
 import com.alertabarrio.domain.model.valueobject.BarrioId;
 import com.alertabarrio.domain.model.valueobject.CuadranteId;
+import com.alertabarrio.domain.model.valueobject.LocalidadId;
 import com.alertabarrio.domain.port.in.ParchearBarrioUseCase;
 import com.alertabarrio.domain.port.out.BarrioRepositoryPort;
 import com.alertabarrio.domain.port.out.CuadranteRepositoryPort;
+import com.alertabarrio.domain.port.out.LocalidadRepositoryPort;
 
 @UseCase
 public class ParchearBarrioUseCaseImpl implements ParchearBarrioUseCase {
 
     private final BarrioRepositoryPort barrioRepository;
     private final CuadranteRepositoryPort cuadranteRepository;
+    private final LocalidadRepositoryPort localidadRepository;
     private final BarrioDomainMapper mapper;
 
-    public ParchearBarrioUseCaseImpl(BarrioRepositoryPort barrioRepository, CuadranteRepositoryPort cuadranteRepository, BarrioDomainMapper mapper) {
+    public ParchearBarrioUseCaseImpl(BarrioRepositoryPort barrioRepository, CuadranteRepositoryPort cuadranteRepository, LocalidadRepositoryPort localidadRepository, BarrioDomainMapper mapper) {
         this.barrioRepository = barrioRepository;
         this.cuadranteRepository = cuadranteRepository;
+        this.localidadRepository = localidadRepository;
         this.mapper = mapper;
     }
 
@@ -34,6 +38,7 @@ public class ParchearBarrioUseCaseImpl implements ParchearBarrioUseCase {
 
         String nombre = command.nombre() != null ? command.nombre() : existente.getNombre();
         Long cuadranteId = command.cuadranteId() != null ? command.cuadranteId() : existente.getCuadranteId().value();
+        Long localidadId = command.localidadId() != null ? command.localidadId() : existente.getLocalidadId().value();
 
         if (command.nombre() != null && !existente.getNombre().equals(nombre) && barrioRepository.existsByNombre(nombre)) {
             throw new ResourceConflictException("Barrio", nombre);
@@ -41,8 +46,11 @@ public class ParchearBarrioUseCaseImpl implements ParchearBarrioUseCase {
         if (command.cuadranteId() != null && !cuadranteRepository.existsById(new CuadranteId(cuadranteId))) {
             throw new ResourceNotFoundException("Cuadrante", cuadranteId);
         }
+        if (command.localidadId() != null && !localidadRepository.findById(new LocalidadId(localidadId)).isPresent()) {
+            throw new ResourceNotFoundException("Localidad", localidadId);
+        }
 
-        Barrio parcheada = Barrio.reconstruir(command.id(), nombre, cuadranteId);
+        Barrio parcheada = Barrio.reconstruir(command.id(), nombre, cuadranteId, localidadId);
         Barrio saved = barrioRepository.save(parcheada);
         return mapper.toDto(saved);
     }

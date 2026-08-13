@@ -28,15 +28,19 @@ public class LoginUseCaseImpl implements LoginUseCase {
 
     @Override
     public AuthResultDTO execute(LoginCommand command) {
-        var user = usuarioRepository.findByEmail(command.email())
-                .orElseThrow(() -> new ResourceNotFoundException("User", command.email()));
+        // OCP: el identificador puede ser un email o un teléfono (registro rápido).
+        // Si contiene '@' se busca por email; si no, por phone (llave del usuario rápido).
+        var user = command.email().contains("@")
+                ? usuarioRepository.findByEmail(command.email())
+                : usuarioRepository.findByPhone(command.email());
+        var usuario = user.orElseThrow(() -> new ResourceNotFoundException("User", command.email()));
 
-        if (!passwordEncoder.verificar(command.password(), user.getPassword())) {
+        if (!passwordEncoder.verificar(command.password(), usuario.getPassword())) {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        String token = tokenService.generarToken(user.getEmail());
-        UsuarioDTO userDto = mapper.toDto(user);
+        String token = tokenService.generarToken(usuario.getEmail());
+        UsuarioDTO userDto = mapper.toDto(usuario);
         return new AuthResultDTO(token, userDto);
     }
 }

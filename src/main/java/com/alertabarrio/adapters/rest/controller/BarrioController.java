@@ -76,13 +76,14 @@ public class BarrioController {
 
     @GetMapping
     public ResponseEntity<Pagina<BarrioResponseDTO>> findAllPaginated(
+            @RequestParam(required = false) Long localidadId,
             @PageableDefault(sort = "nombre", direction = Sort.Direction.ASC) Pageable pageable) {
         String orden = pageable.getSort().stream().findFirst()
                 .map(Sort.Order::getProperty).orElse(null);
         String direccion = pageable.getSort().stream().findFirst()
                 .map(o -> o.getDirection().name().toLowerCase()).orElse(null);
         Paginacion paginacion = Paginacion.of(pageable.getPageNumber(), pageable.getPageSize(), orden, direccion);
-        Pagina<BarrioDTO> result = listarBarriosUseCase.execute(mapper.toListarQuery(paginacion));
+        Pagina<BarrioDTO> result = listarBarriosUseCase.execute(mapper.toListarQuery(localidadId, paginacion));
         return ResponseEntity.ok(new Pagina<>(
                 result.contenido().stream().map(mapper::toResponse).toList(),
                 result.pagina(), result.tamanio(), result.totalElementos(), result.totalPaginas()));

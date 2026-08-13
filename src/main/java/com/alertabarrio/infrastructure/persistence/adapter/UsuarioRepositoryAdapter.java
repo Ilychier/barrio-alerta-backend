@@ -63,6 +63,12 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
+    public Optional<User> findByPhone(String phone) {
+        return jpaRepository.findByPhone(phone)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Pagina<User> findAll(Paginacion paginacion) {
         Pageable pageable = PaginacionHelper.toPageable(paginacion);
         Page<UserEntity> page = jpaRepository.findAll(pageable);

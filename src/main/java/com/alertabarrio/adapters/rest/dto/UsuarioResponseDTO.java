@@ -6,6 +6,7 @@ public record UsuarioResponseDTO(
         String email,
         String phone,
         String address,
-        Long barrioId
+        Long barrioId,
+        boolean passwordTemporal
 ) {
 }

@@ -13,5 +13,13 @@ public interface UsuarioRepositoryPort {
     void deleteById(UsuarioId id);
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
+
+    /**
+     * Busca un usuario por su teléfono (llave principal del registro rápido
+     * de emergencia). Extiende el contrato sin romper los métodos existentes
+     * (OCP): el login acepta email o phone indistintamente.
+     */
+    Optional<User> findByPhone(String phone);
+
     Pagina<User> findAll(Paginacion paginacion);
 }

@@ -31,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
     "TRUNCATE TABLE users RESTART IDENTITY",
     "TRUNCATE TABLE categoria_descripciones RESTART IDENTITY",
     "TRUNCATE TABLE barrios RESTART IDENTITY",
+    "TRUNCATE TABLE localidades RESTART IDENTITY",
+    "TRUNCATE TABLE ciudades RESTART IDENTITY",
     "TRUNCATE TABLE cuadrantes RESTART IDENTITY",
     "TRUNCATE TABLE categorias RESTART IDENTITY",
     "SET REFERENTIAL_INTEGRITY TRUE"
@@ -50,6 +52,12 @@ class ConfiguracionRepositoryAdapterTest {
     @Autowired
     private CuadranteJpaRepository cuadranteJpaRepository;
 
+    @Autowired
+    private CiudadInfoJpaRepository ciudadJpaRepository;
+
+    @Autowired
+    private LocalidadJpaRepository localidadJpaRepository;
+
     private ConfiguracionRepositoryAdapter adapter;
     private UserEntity usuario;
 
@@ -58,7 +66,9 @@ class ConfiguracionRepositoryAdapterTest {
         ConfiguracionEntityMapper mapper = new ConfiguracionEntityMapper() {};
         adapter = new ConfiguracionRepositoryAdapter(jpaRepository, mapper);
         CuadranteEntity cuadrante = cuadranteJpaRepository.save(new CuadranteEntity("Bomberos", "+573001234567", "bomberos@test.com"));
-        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante));
+        CiudadInfoEntity ciudad = ciudadJpaRepository.save(new CiudadInfoEntity("Medellín", "Antioquia", "Colombia"));
+        LocalidadEntity localidad = localidadJpaRepository.save(new LocalidadEntity("Castilla", ciudad));
+        BarrioEntity barrio = barrioJpaRepository.save(new BarrioEntity("Centro", cuadrante, localidad));
         usuario = userJpaRepository.save(new UserEntity("Juan", "juan@test.com", "+573001111111", "Calle 1", "pass123", barrio));
     }
 

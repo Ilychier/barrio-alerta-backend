@@ -25,19 +25,32 @@ public class UserEntity {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
+    /**
+     * true si la contraseña es temporal (registro rápido de emergencia).
+     * El login con clave temporal fuerza el cambio de contraseña.
+     */
+    @Column(name = "password_temporal", nullable = false)
+    private boolean passwordTemporal;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "barrio_id", nullable = false)
+    @JoinColumn(name = "barrio_id")
     private BarrioEntity barrio;
 
     public UserEntity() {}
 
     public UserEntity(String name, String email, String phone, String address, String password, BarrioEntity barrio) {
+        this(name, email, phone, address, password, barrio, false);
+    }
+
+    public UserEntity(String name, String email, String phone, String address, String password,
+                      BarrioEntity barrio, boolean passwordTemporal) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
         this.password = password;
         this.barrio = barrio;
+        this.passwordTemporal = passwordTemporal;
     }
 
     public Long getId() { return id; }
@@ -52,6 +65,8 @@ public class UserEntity {
     public void setAddress(String address) { this.address = address; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public boolean isPasswordTemporal() { return passwordTemporal; }
+    public void setPasswordTemporal(boolean passwordTemporal) { this.passwordTemporal = passwordTemporal; }
     public BarrioEntity getBarrio() { return barrio; }
     public void setBarrio(BarrioEntity barrio) { this.barrio = barrio; }
 }
