@@ -35,6 +35,9 @@ build/
 
 ### Secrets locales (NO subir al repositorio) ###
 application-local.properties
-src/main/resources/application-prod.properties
 src/main/resources/application-dev.properties
 /uploads
+
+# opencode per-project config (local-only)
+opencode.json
+opencode.jsonc
